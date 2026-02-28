@@ -2,7 +2,7 @@ let workData = JSON.parse(localStorage.getItem('workData_v5')) || {};
 let currentUser = localStorage.getItem('loggedUser') || null;
 let selectedDateKey = null;
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsWridY0kjSi3E7x62ZU9x5sdUWpeYH4izJObPXQDG62MkQCrN_4oW7OCG1FNcRIExYw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVf6cTbWCLxyIwXVdR9GIXgsQC_lndTR0iutKyiSxvglR8YDljwmqC6X4wiWCIYXu_Xw/exec";
 
 window.onload = () => {
     if (currentUser) showApp(currentUser);
@@ -157,18 +157,20 @@ function saveNote() {
 
 // --- ĐỒNG BỘ GOOGLE SHEETS ---
 function syncToSheets(ngay, loai, luong, ghiChu) {
+    // Dùng URLSearchParams là cách an toàn nhất để Google Sheets nhận dữ liệu mà không bị lỗi
+    const params = new URLSearchParams();
+    params.append('ngay', ngay);
+    params.append('loai', loai);
+    params.append('luong', luong);
+    params.append('ghiChu', ghiChu);
+
     fetch(SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors", 
-        body: JSON.stringify({
-            ngay: ngay,
-            loai: loai,
-            luong: luong,
-            ghiChu: ghiChu
-        })
+        mode: "no-cors", // Bắt buộc phải có để lách luật bảo mật trình duyệt
+        body: params
     })
-    .then(() => console.log("Đã đồng bộ Google Sheets! ❤️"))
-    .catch(err => console.log("Lỗi đồng bộ:", err));
+    .then(() => console.log("Dữ liệu đã bay sang Sheets của Anh! 🚀"))
+    .catch(err => console.error("Lỗi gửi dữ liệu:", err));
 }
 
 function saveAndRefresh() {
