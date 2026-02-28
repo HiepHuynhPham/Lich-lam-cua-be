@@ -156,57 +156,49 @@ function saveNote() {
 }
 
 // --- ĐỒNG BỘ GOOGLE SHEETS ---
-function syncToSheets(ngay, loai, luong, ghiChu) {
-    const params = new URLSearchParams();
-    params.append('ngay', ngay);
-    params.append('loai', loai);
-    params.append('luong', luong);
-    params.append('ghiChu', ghiChu);
-
-    fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors", 
-        body: params
-    })
-    .then(() => console.log("Đã đồng bộ Google Sheets! ❤️"))
-    .catch(err => console.log("Lỗi đồng bộ:", err));
-}
-
+// --- ĐỒNG BỘ GOOGLE SHEETS (Bản Fix 5 Cột) ---
 function saveAndRefresh() {
-    // 1. Lưu vào LocalStorage của máy bé
+    // 1. Lưu vào LocalStorage (v6)
     localStorage.setItem('workData_v6', JSON.stringify(workData));
 
     // 2. Gom dữ liệu gửi sang Sheets
     const data = workData[selectedDateKey];
     if (data) {
         const params = new URLSearchParams();
-        params.append('ngay', selectedDateKey); // Ngày làm (vd: 2026-3-1)
-        params.append('taiKhoan', currentUser || "Khách"); // Tên tài khoản
         
-        // Loại ca (Sáng/Chiều/Full + Dâu)
+        // Gửi ĐÚNG TÊN biến mà Apps Script đang đợi
+        params.append('ngay', selectedDateKey); 
+        params.append('taiKhoan', currentUser || "Bé Yêu"); 
+        
+        // Xử lý hiển thị Ca làm
         const loaiHienThi = data.isPeriod ? `${data.shift || 'Nghỉ'} + Dâu 🩸` : (data.shift || 'Nghỉ');
         params.append('caLam', loaiHienThi);
         
-        // Chi nhánh (Lấy từ ô chọn chi nhánh trên giao diện)
+        // Lấy chi nhánh từ ô chọn trên giao diện
         const chiNhanh = document.getElementById('branchSelect').value;
         params.append('chiNhanh', chiNhanh);
         
         // Ghi chú
         params.append('ghiChu', data.note || "");
 
-        // Gửi đi
+        // Lệnh gửi fetch duy nhất (Xóa bỏ syncToSheets cũ)
         fetch(SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
             body: params
-        }).then(() => console.log("Đã đồng bộ đủ 5 cột! ❤️"));
+        })
+        .then(() => console.log("Gửi thành công đủ 5 cột!"))
+        .catch(err => console.error("Lỗi gửi:", err));
     }
 
-    // 3. Cập nhật giao diện
+    // 3. Cập nhật giao diện App
     renderCalendar();
     closeModal();
     updateCountdown();
 }
+
+// Xóa bỏ hoặc vô hiệu hóa hàm syncToSheets cũ để tránh nhầm lẫn
+function syncToSheets() { /* Không dùng nữa */ }
 
 function closeModal() { 
     document.getElementById('modal').style.display = 'none'; 
