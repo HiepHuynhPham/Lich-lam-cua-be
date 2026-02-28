@@ -181,7 +181,7 @@ function saveAndRefresh() {
         // Ghi chú
         params.append('ghiChu', data.note || "");
 
-        // Lệnh gửi fetch duy nhất (Xóa bỏ syncToSheets cũ)
+        // Lệnh gửi fetch duy nhất
         fetch(SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
@@ -196,9 +196,6 @@ function saveAndRefresh() {
     closeModal();
     updateCountdown();
 }
-
-// Xóa bỏ hoặc vô hiệu hóa hàm syncToSheets cũ để tránh nhầm lẫn
-function syncToSheets() { /* Không dùng nữa */ }
 
 function closeModal() { 
     document.getElementById('modal').style.display = 'none'; 
