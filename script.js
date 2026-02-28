@@ -1,4 +1,4 @@
-let workData = JSON.parse(localStorage.getItem('workData_v5')) || {};
+let workData = JSON.parse(localStorage.getItem('workData_v6')) || JSON.parse(localStorage.getItem('workData_v5')) || {};
 let currentUser = localStorage.getItem('loggedUser') || null;
 let selectedDateKey = null;
 
@@ -174,7 +174,7 @@ function syncToSheets(ngay, loai, luong, ghiChu) {
 
 function saveAndRefresh() {
     // 1. Lưu vào LocalStorage của máy bé
-    localStorage.setItem('workData_v5', JSON.stringify(workData));
+    localStorage.setItem('workData_v6', JSON.stringify(workData));
 
     // 2. Lấy dữ liệu ngày đang chọn để gửi đi
     const data = workData[selectedDateKey];
@@ -231,4 +231,18 @@ if ('serviceWorker' in navigator) {
       .then(reg => console.log('Offline mode sẵn sàng!', reg))
       .catch(err => console.log('Lỗi offline:', err));
   });
+}
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+        reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // Hiện một cái thông báo nhẹ
+                    alert("Đã có bản cập nhật mới! Bé tắt App mở lại để thấy thay đổi nhé ❤️");
+                }
+            });
+        });
+    });
 }
