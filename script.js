@@ -137,41 +137,42 @@ function openModal(key) {
     document.getElementById('modal').style.display = 'flex';
 }
 
-
-
-function togglePeriod() {
-    if(!workData[selectedDateKey]) workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
-    workData[selectedDateKey].isPeriod = !workData[selectedDateKey].isPeriod;
-    saveAndRefresh();
-}
-
-// --- ĐỒNG BỘ GOOGLE SHEETS ---
-// --- ĐỒNG BỘ GOOGLE SHEETS (Bản Fix 5 Cột) ---
-// 1. Khi bấm chọn ca: CHỈ cập nhật dữ liệu, KHÔNG đóng modal, KHÔNG gửi Sheets
 function setShift(s) {
     if(!workData[selectedDateKey]) workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
     workData[selectedDateKey].shift = s;
     
-    // Thêm hiệu ứng đổi màu nút để bé biết mình đang chọn ca nào (Tùy chọn)
-    const buttons = document.querySelectorAll('.btn-group button');
-    buttons.forEach(btn => btn.style.opacity = "0.6");
-    if(event) event.target.style.opacity = "1";
-    if(event) event.target.style.border = "2px solid white";
-
-    console.log("Đã chọn tạm thời: " + s);
+    // Thêm hiệu ứng để bé biết là đã bấm trúng (Nút sẽ đậm lên)
+    document.querySelectorAll('.btn-group button').forEach(btn => btn.style.border = "none");
+    if(event) event.target.style.border = "2px solid #ff85a1";
+    
+    // CHỈ CẬP NHẬT DỮ LIỆU TẠM THỜI, KHÔNG GỌI saveAndRefresh() Ở ĐÂY
+    console.log("Đã chọn ca: " + s);
 }
 
-// 2. Hàm lưu cuối cùng: Gom cả Ca làm + Ghi chú rồi mới đóng Modal và gửi đi
+function togglePeriod() {
+    if(!workData[selectedDateKey]) workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
+    workData[selectedDateKey].isPeriod = !workData[selectedDateKey].isPeriod;
+    
+    // Đổi chữ trên nút để bé biết đã bật hay chưa
+    const periodBtn = document.querySelector('.btn-period');
+    periodBtn.innerText = workData[selectedDateKey].isPeriod ? "Xóa Ngày Dâu 🧊" : "Ngày Dâu 🩸";
+}
+
+// --- ĐỒNG BỘ GOOGLE SHEETS ---
+// --- ĐỒNG BỘ GOOGLE SHEETS (Bản Fix 5 Cột) ---
 function saveAndRefresh() {
-    // Lấy nội dung ghi chú từ ô nhập liệu TRƯỚC khi lưu
-    const noteValue = document.getElementById('dayNote').value;
+    if(!selectedDateKey) return;
+
+    // Bước quan trọng: Lấy nội dung ghi chú từ ô Textarea TRƯỚC khi đóng
+    const noteContent = document.getElementById('dayNote').value;
     
     if(!workData[selectedDateKey]) workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
-    workData[selectedDateKey].note = noteValue;
+    workData[selectedDateKey].note = noteContent;
 
-    // Lưu LocalStorage
+    // 1. Lưu LocalStorage
     localStorage.setItem('workData_v6', JSON.stringify(workData));
 
+    // 2. Gửi sang Sheets
     const data = workData[selectedDateKey];
     if (data) {
         const params = new URLSearchParams();
@@ -180,27 +181,27 @@ function saveAndRefresh() {
         
         const loaiHienThi = data.isPeriod ? `${data.shift || 'Nghỉ'} + Dâu 🩸` : (data.shift || 'Nghỉ');
         params.append('caLam', loaiHienThi);
-        
-        const chiNhanh = document.getElementById('branchSelect').value;
-        params.append('chiNhanh', chiNhanh);
-        
+        params.append('chiNhanh', document.getElementById('branchSelect').value);
         params.append('ghiChu', data.note || "");
 
         fetch(SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
             body: params
-        }).then(() => console.log("Đã chốt gửi đủ 5 cột!"));
+        });
     }
 
+    // 3. Cập nhật giao diện và ĐÓNG MODAL
     renderCalendar();
-    closeModal(); // CHỈ ĐÓNG MODAL KHI BẤM NÚT LƯU
+    closeModal(); 
     updateCountdown();
     calculateSalary();
 }
 
-// Xóa hoặc làm trống hàm saveNote cũ để không bị xung đột
-function saveNote() { saveAndRefresh(); }
+// Sửa lại hàm saveNote để nó cũng gọi chung 1 hàm lưu
+function saveNote() {
+    saveAndRefresh();
+}
 
 function closeModal() { 
     document.getElementById('modal').style.display = 'none'; 
