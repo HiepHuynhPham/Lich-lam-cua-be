@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lich-be-yeu-v4';
+const CACHE_NAME = 'lich-be-yeu-v5';
 const urlsToCache = [
   './',
   './index.html',
@@ -7,11 +7,17 @@ const urlsToCache = [
   './manifest.json'
 ];
 
+
+
 // Cài đặt Service Worker và lưu trữ file offline
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
+});
+
+self.addEventListener('install', (event) => {
+  self.skipWaiting(); // Ép Service Worker mới kích hoạt ngay lập tức
 });
 
 // Phục vụ file khi không có mạng

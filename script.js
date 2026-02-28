@@ -157,7 +157,6 @@ function saveNote() {
 
 // --- ĐỒNG BỘ GOOGLE SHEETS ---
 function syncToSheets(ngay, loai, luong, ghiChu) {
-    // Dùng URLSearchParams là cách an toàn nhất để Google Sheets nhận dữ liệu mà không bị lỗi
     const params = new URLSearchParams();
     params.append('ngay', ngay);
     params.append('loai', loai);
@@ -166,38 +165,46 @@ function syncToSheets(ngay, loai, luong, ghiChu) {
 
     fetch(SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors", // Bắt buộc phải có để lách luật bảo mật trình duyệt
+        mode: "no-cors", 
         body: params
     })
-    .then(() => console.log("Dữ liệu đã bay sang Sheets của Anh! 🚀"))
-    .catch(err => console.error("Lỗi gửi dữ liệu:", err));
+    .then(() => console.log("Đã đồng bộ Google Sheets! ❤️"))
+    .catch(err => console.log("Lỗi đồng bộ:", err));
 }
 
 function saveAndRefresh() {
-    // 1. Lưu vào LocalStorage
+    // 1. Lưu vào LocalStorage của máy bé
     localStorage.setItem('workData_v5', JSON.stringify(workData));
 
-    // 2. Gửi dữ liệu sang Google Sheets cho Anh
+    // 2. Lấy dữ liệu ngày đang chọn để gửi đi
     const data = workData[selectedDateKey];
-    const rate = parseInt(document.getElementById('hourlyRateInput').value) || 0;
-    let tienCa = 0;
-    if (data.shift === 'Full') tienCa = rate * 13;
-    else if (data.shift) tienCa = rate * 7;
+    if (data) {
+        const rate = parseInt(document.getElementById('hourlyRateInput').value) || 0;
+        let tienCa = 0;
+        if (data.shift === 'Full') tienCa = rate * 13;
+        else if (data.shift) tienCa = rate * 7;
 
-    const loaiHienThi = data.isPeriod ? `${data.shift || 'Nghỉ'} + Dâu 🩸` : (data.shift || 'Nghỉ');
+        const loaiHienThi = data.isPeriod ? `${data.shift || 'Nghỉ'} + Dâu 🩸` : (data.shift || 'Nghỉ');
 
-    syncToSheets(selectedDateKey, loaiHienThi, tienCa, data.note || "");
+        // Gửi sang Sheets cho Anh
+        syncToSheets(selectedDateKey, loaiHienThi, tienCa, data.note || "");
+    }
 
-    // 3. Cập nhật giao diện
+    // 3. Cập nhật giao diện App
     renderCalendar();
     closeModal();
     updateCountdown();
 }
 
-function closeModal() { document.getElementById('modal').style.display = 'none'; }
+function closeModal() { 
+    document.getElementById('modal').style.display = 'none'; 
+}
 
 function calculateSalary() {
-    let full = 0, half = 0, hrs = 0, m = parseInt(document.getElementById('selectMonth').value)+1, y = parseInt(document.getElementById('selectYear').value);
+    let full = 0, half = 0, hrs = 0, 
+        m = parseInt(document.getElementById('selectMonth').value)+1, 
+        y = parseInt(document.getElementById('selectYear').value);
+    
     for (let k in workData) {
         if (k.startsWith(`${y}-${m}-`)) {
             const s = workData[k].shift;
@@ -205,7 +212,7 @@ function calculateSalary() {
             else if (s) { half++; hrs += 7; }
         }
     }
-    const rate = parseInt(document.getElementById('hourlyRateInput').value);
+    const rate = parseInt(document.getElementById('hourlyRateInput').value) || 0;
     document.getElementById('totalFull').innerText = full;
     document.getElementById('totalHalf').innerText = half;
     document.getElementById('totalMoney').innerText = (hrs * rate).toLocaleString() + "đ";
