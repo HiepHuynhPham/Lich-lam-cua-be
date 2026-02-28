@@ -137,11 +137,7 @@ function openModal(key) {
     document.getElementById('modal').style.display = 'flex';
 }
 
-function setShift(s) {
-    if(!workData[selectedDateKey]) workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
-    workData[selectedDateKey].shift = s;
-    saveAndRefresh();
-}
+
 
 function togglePeriod() {
     if(!workData[selectedDateKey]) workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
@@ -149,53 +145,62 @@ function togglePeriod() {
     saveAndRefresh();
 }
 
-function saveNote() {
-    if(!workData[selectedDateKey]) workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
-    workData[selectedDateKey].note = document.getElementById('dayNote').value;
-    saveAndRefresh();
-}
-
 // --- ĐỒNG BỘ GOOGLE SHEETS ---
 // --- ĐỒNG BỘ GOOGLE SHEETS (Bản Fix 5 Cột) ---
+// 1. Khi bấm chọn ca: CHỈ cập nhật dữ liệu, KHÔNG đóng modal, KHÔNG gửi Sheets
+function setShift(s) {
+    if(!workData[selectedDateKey]) workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
+    workData[selectedDateKey].shift = s;
+    
+    // Thêm hiệu ứng đổi màu nút để bé biết mình đang chọn ca nào (Tùy chọn)
+    const buttons = document.querySelectorAll('.btn-group button');
+    buttons.forEach(btn => btn.style.opacity = "0.6");
+    if(event) event.target.style.opacity = "1";
+    if(event) event.target.style.border = "2px solid white";
+
+    console.log("Đã chọn tạm thời: " + s);
+}
+
+// 2. Hàm lưu cuối cùng: Gom cả Ca làm + Ghi chú rồi mới đóng Modal và gửi đi
 function saveAndRefresh() {
-    // 1. Lưu vào LocalStorage (v6)
+    // Lấy nội dung ghi chú từ ô nhập liệu TRƯỚC khi lưu
+    const noteValue = document.getElementById('dayNote').value;
+    
+    if(!workData[selectedDateKey]) workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
+    workData[selectedDateKey].note = noteValue;
+
+    // Lưu LocalStorage
     localStorage.setItem('workData_v6', JSON.stringify(workData));
 
-    // 2. Gom dữ liệu gửi sang Sheets
     const data = workData[selectedDateKey];
     if (data) {
         const params = new URLSearchParams();
+        params.append('ngay', selectedDateKey);
+        params.append('taiKhoan', localStorage.getItem('loggedUser') || "Công Chúa");
         
-        // Gửi ĐÚNG TÊN biến mà Apps Script đang đợi
-        params.append('ngay', selectedDateKey); 
-        params.append('taiKhoan', currentUser || "Bé Yêu"); 
-        
-        // Xử lý hiển thị Ca làm
         const loaiHienThi = data.isPeriod ? `${data.shift || 'Nghỉ'} + Dâu 🩸` : (data.shift || 'Nghỉ');
         params.append('caLam', loaiHienThi);
         
-        // Lấy chi nhánh từ ô chọn trên giao diện
         const chiNhanh = document.getElementById('branchSelect').value;
         params.append('chiNhanh', chiNhanh);
         
-        // Ghi chú
         params.append('ghiChu', data.note || "");
 
-        // Lệnh gửi fetch duy nhất
         fetch(SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
             body: params
-        })
-        .then(() => console.log("Gửi thành công đủ 5 cột!"))
-        .catch(err => console.error("Lỗi gửi:", err));
+        }).then(() => console.log("Đã chốt gửi đủ 5 cột!"));
     }
 
-    // 3. Cập nhật giao diện App
     renderCalendar();
-    closeModal();
+    closeModal(); // CHỈ ĐÓNG MODAL KHI BẤM NÚT LƯU
     updateCountdown();
+    calculateSalary();
 }
+
+// Xóa hoặc làm trống hàm saveNote cũ để không bị xung đột
+function saveNote() { saveAndRefresh(); }
 
 function closeModal() { 
     document.getElementById('modal').style.display = 'none'; 
