@@ -2,10 +2,11 @@ let workData = JSON.parse(localStorage.getItem('workData_v5')) || {};
 let currentUser = localStorage.getItem('loggedUser') || null;
 let selectedDateKey = null;
 
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsWridY0kjSi3E7x62ZU9x5sdUWpeYH4izJObPXQDG62MkQCrN_4oW7OCG1FNcRIExYw/exec";
+
 window.onload = () => {
     if (currentUser) showApp(currentUser);
     setInterval(updateCountdown, 1000);
-    // Load chi nhánh đã lưu
     const savedBranch = localStorage.getItem('selectedBranch');
     if (savedBranch) document.getElementById('branchSelect').value = savedBranch;
 };
@@ -66,7 +67,6 @@ function renderCalendar() {
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    // Tìm ngày dâu cuối cùng
     let lastPeriod = null;
     Object.keys(workData).sort().forEach(k => { if(workData[k].isPeriod) lastPeriod = new Date(k); });
 
@@ -80,15 +80,11 @@ function renderCalendar() {
         if (data.isPeriod) cls += ' is-period';
         if (data.note) cls += ' has-note';
 
-        // Dự báo: Lấy ngày tháng trước trừ 5 ngày
         if (lastPeriod && !data.isPeriod) {
             let current = new Date(key);
             let nextPredict = new Date(lastPeriod);
-            nextPredict.setDate(nextPredict.getDate() + 28 - 5); // Chu kỳ 28 ngày, báo trước 5 ngày
-            
-            if (current.toDateString() === nextPredict.toDateString()) {
-                cls += ' predicted-period';
-            }
+            nextPredict.setDate(nextPredict.getDate() + 28 - 5);
+            if (current.toDateString() === nextPredict.toDateString()) cls += ' predicted-period';
         }
 
         grid.innerHTML += `<div class="day ${cls}" onclick="openModal('${key}')">${d}<small style="font-size:7px">${data.shift||''}</small></div>`;
@@ -96,7 +92,7 @@ function renderCalendar() {
     calculateSalary();
 }
 
-// --- ĐẾM NGƯỢC THEO CA LÀM VIỆC ---
+// --- ĐẾM NGƯỢC ---
 function updateCountdown() {
     const now = new Date();
     const todayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
@@ -110,15 +106,12 @@ function updateCountdown() {
     }
 
     let endH = 22, endM = 0;
-    // Xác định giờ kết thúc dựa trên chi nhánh và ca làm
     if (branch === "176") { endH = 22; endM = 30; }
     else if (branch === "503") { endH = 22; endM = 0; }
     else if (branch === "CN3") { endH = 21; endM = 30; }
     else if (branch === "CN4") { endH = 21; endM = 0; }
 
-    // Nếu là ca Sáng (giả định 7h-14h) hoặc Chiều (15h-22h)
     if (todayData.shift === "Sáng") { endH = 14; endM = 0; }
-    // Nếu ca Chiều/Full thì dùng giờ của Chi nhánh
 
     const target = new Date();
     target.setHours(endH, endM, 0);
@@ -139,11 +132,8 @@ function openModal(key) {
     const data = workData[key] || { isPeriod: false, note: "" };
     document.getElementById('modalDate').innerText = "Ngày " + key.split('-')[2];
     document.getElementById('dayNote').value = data.note || "";
-    
-    // Đổi tên nút ngày dâu nếu đã tồn tại
     const periodBtn = document.querySelector('.btn-period');
     periodBtn.innerText = data.isPeriod ? "Xóa Ngày Dâu 🧊" : "Ngày Dâu 🩸";
-    
     document.getElementById('modal').style.display = 'flex';
 }
 
@@ -165,8 +155,38 @@ function saveNote() {
     saveAndRefresh();
 }
 
+// --- ĐỒNG BỘ GOOGLE SHEETS ---
+function syncToSheets(ngay, loai, luong, ghiChu) {
+    fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors", 
+        body: JSON.stringify({
+            ngay: ngay,
+            loai: loai,
+            luong: luong,
+            ghiChu: ghiChu
+        })
+    })
+    .then(() => console.log("Đã đồng bộ Google Sheets! ❤️"))
+    .catch(err => console.log("Lỗi đồng bộ:", err));
+}
+
 function saveAndRefresh() {
+    // 1. Lưu vào LocalStorage
     localStorage.setItem('workData_v5', JSON.stringify(workData));
+
+    // 2. Gửi dữ liệu sang Google Sheets cho Anh
+    const data = workData[selectedDateKey];
+    const rate = parseInt(document.getElementById('hourlyRateInput').value) || 0;
+    let tienCa = 0;
+    if (data.shift === 'Full') tienCa = rate * 13;
+    else if (data.shift) tienCa = rate * 7;
+
+    const loaiHienThi = data.isPeriod ? `${data.shift || 'Nghỉ'} + Dâu 🩸` : (data.shift || 'Nghỉ');
+
+    syncToSheets(selectedDateKey, loaiHienThi, tienCa, data.note || "");
+
+    // 3. Cập nhật giao diện
     renderCalendar();
     closeModal();
     updateCountdown();
