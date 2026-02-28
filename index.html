@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Công Chúa 🎀</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+    <div class="card" id="auth-card">
+        <div id="login-form">
+            <h2>Đăng Nhập 🎀</h2>
+            <input type="text" id="login-user" placeholder="Tên đăng nhập">
+            <input type="password" id="login-pass" placeholder="Mật khẩu">
+            <button onclick="login()">Vào xem lịch thôi!</button>
+            <p class="switch-btn" onclick="toggleForm()">Chưa có tài khoản? Đăng ký</p>
+        </div>
+        <div id="register-form" class="hidden">
+            <h2>Đăng Ký 🌸</h2>
+            <input type="text" id="reg-user" placeholder="Tên đăng nhập mới">
+            <input type="password" id="reg-pass" placeholder="Mật khẩu mới">
+            <button onclick="register()">Tạo tài khoản</button>
+            <p class="switch-btn" onclick="toggleForm()">Quay lại Đăng nhập</p>
+        </div>
+    </div>
+
+    <div id="main-app" class="hidden">
+        <div class="card main-card">
+            <div class="header-app">
+                <h2 id="hello-user">Chào bé! ✨</h2>
+                <div id="countdown-timer" class="countdown"></div>
+            </div>
+            
+            <div class="settings-box">
+                <select id="branchSelect" onchange="renderCalendar()">
+                    <option value="176">CN 176 (Giờ kết thúc: 22h30)</option>
+                    <option value="503">CN 503 (Giờ kết thúc: 22h00)</option>
+                    <option value="220">CN 220 (Giờ kết thúc: 22h30)</option>
+                    <option value="257">CN 257 (Giờ kết thúc: 22h00)</option>
+
+
+                </select>
+                <input type="number" id="hourlyRateInput" value="35000" oninput="calculateSalary()">
+            </div>
+
+            <div class="calendar-nav">
+                <select id="selectMonth" onchange="renderCalendar()"></select>
+                <select id="selectYear" onchange="renderCalendar()"></select>
+            </div>
+
+            <div class="grid" id="calendarGrid"></div>
+
+            <div class="stats">
+                <div class="stat-box"><span id="totalFull">0</span><div class="label">Full</div></div>
+                <div class="stat-box"><span id="totalHalf">0</span><div class="label">Nửa</div></div>
+                <div class="stat-box total-salary">
+                    <span id="totalMoney">0đ</span>
+                    <div id="salaryTitle" class="label">TỔNG LƯƠNG</div>
+                </div>
+            </div>
+
+            <div class="action-btns">
+                <button class="btn-report" onclick="copyReport()">📋 Copy báo cáo gửi Anh</button>
+                <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h3 id="modalDate">Ngày ...</h3>
+            <div class="btn-group">
+                <button onclick="setShift('Full')" class="btn-full">Ca Full (13h)</button>
+                <button onclick="setShift('Sáng')" class="btn-half">Ca Sáng (7h)</button>
+                <button onclick="setShift('Chiều')" class="btn-half">Ca Chiều (7h)</button>
+                <button onclick="togglePeriod()" class="btn-period">Ngày Dâu 🩸</button>
+                <button onclick="setShift(null)" class="btn-delete">Xóa ca</button>
+            </div>
+            <textarea id="dayNote" placeholder="Ghi chú hôm nay (ví dụ: được tip 50k...)" rows="2"></textarea>
+            <button onclick="saveNote()" style="background:#4CAF50; margin-top:10px">Lưu ghi chú</button>
+            <p class="close-text" onclick="closeModal()">Đóng</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
