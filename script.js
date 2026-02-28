@@ -176,21 +176,33 @@ function saveAndRefresh() {
     // 1. Lưu vào LocalStorage của máy bé
     localStorage.setItem('workData_v6', JSON.stringify(workData));
 
-    // 2. Lấy dữ liệu ngày đang chọn để gửi đi
+    // 2. Gom dữ liệu gửi sang Sheets
     const data = workData[selectedDateKey];
     if (data) {
-        const rate = parseInt(document.getElementById('hourlyRateInput').value) || 0;
-        let tienCa = 0;
-        if (data.shift === 'Full') tienCa = rate * 13;
-        else if (data.shift) tienCa = rate * 7;
-
+        const params = new URLSearchParams();
+        params.append('ngay', selectedDateKey); // Ngày làm (vd: 2026-3-1)
+        params.append('taiKhoan', currentUser || "Khách"); // Tên tài khoản
+        
+        // Loại ca (Sáng/Chiều/Full + Dâu)
         const loaiHienThi = data.isPeriod ? `${data.shift || 'Nghỉ'} + Dâu 🩸` : (data.shift || 'Nghỉ');
+        params.append('caLam', loaiHienThi);
+        
+        // Chi nhánh (Lấy từ ô chọn chi nhánh trên giao diện)
+        const chiNhanh = document.getElementById('branchSelect').value;
+        params.append('chiNhanh', chiNhanh);
+        
+        // Ghi chú
+        params.append('ghiChu', data.note || "");
 
-        // Gửi sang Sheets cho Anh
-        syncToSheets(selectedDateKey, loaiHienThi, tienCa, data.note || "");
+        // Gửi đi
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            body: params
+        }).then(() => console.log("Đã đồng bộ đủ 5 cột! ❤️"));
     }
 
-    // 3. Cập nhật giao diện App
+    // 3. Cập nhật giao diện
     renderCalendar();
     closeModal();
     updateCountdown();
