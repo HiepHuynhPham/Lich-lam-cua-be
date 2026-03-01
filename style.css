@@ -14,11 +14,16 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: var(--soft-pink);
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;   /* để footer xuống dưới */
+    justify-content: center;  /* căn giữa ngang */
+    align-items: center;      /* căn giữa dọc */
     min-height: 100vh;
     margin: 0;
     padding: 10px;
+}
+
+html, body {
+    overflow-x: hidden;
 }
 
 .card {
@@ -27,7 +32,7 @@ body {
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(255, 133, 161, 0.15);
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     text-align: center;
 }
 
@@ -213,13 +218,7 @@ button:hover { opacity: 0.8; transform: scale(0.98); }
     margin-top: auto; /* Tự động đẩy xuống nếu dùng flexbox */
 }
 
-/* Đảm bảo body đủ cao để đẩy footer xuống */
-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    margin: 0;
-}
+
 
 .month-slider {
     margin-bottom: 10px;
