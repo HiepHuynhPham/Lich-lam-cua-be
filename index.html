@@ -35,20 +35,17 @@
             </div>
             
             <div class="settings-box">
-                <select id="branchSelect" onchange="renderCalendar()">
-                    <option value="176">CN 176 (Giờ kết thúc: 22h30)</option>
-                    <option value="503">CN 503 (Giờ kết thúc: 22h00)</option>
-                    <option value="220">CN 220 (Giờ kết thúc: 22h30)</option>
-                    <option value="257">CN 257 (Giờ kết thúc: 22h00)</option>
-
-
-                </select>
+                <div class="branch-selector">
+    <div class="branch-card" data-branch="176">CN 176<br><small>22h30</small></div>
+    <div class="branch-card" data-branch="503">CN 503<br><small>22h00</small></div>
+    <div class="branch-card" data-branch="220">CN 220<br><small>22h30</small></div>
+    <div class="branch-card" data-branch="257">CN 257<br><small>22h00</small></div>
+</div>
                 <input type="number" id="hourlyRateInput" value="35000" oninput="calculateSalary()">
             </div>
 
-            <div class="calendar-nav">
-                <select id="selectMonth" onchange="renderCalendar()"></select>
-                <select id="selectYear" onchange="renderCalendar()"></select>
+            <div class="month-slider" id="monthSlider">
+                <div class="month-display" id="monthDisplay"></div>
             </div>
 
             <div class="grid" id="calendarGrid"></div>
@@ -91,7 +88,7 @@
     </div>
 
     <div class="footer-version">
-        Version: 16
+        Version: 17
     </div>
     
     <script src="script.js"></script>

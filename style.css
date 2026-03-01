@@ -220,3 +220,38 @@ body {
     min-height: 100vh;
     margin: 0;
 }
+
+.month-slider {
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.month-display {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--pink);
+    transition: transform 0.3s ease;
+}
+
+.branch-selector {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.branch-card {
+    background: #fff5f7;
+    border: 1px solid var(--pink);
+    border-radius: 12px;
+    padding: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.branch-card.active {
+    background: var(--pink);
+    color: white;
+}

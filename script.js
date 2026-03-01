@@ -42,6 +42,7 @@ function showApp(user) {
     document.getElementById('main-app').classList.remove('hidden');
     document.getElementById('hello-user').innerText = `Chào ${user}! 🌸`;
     initCalendar();
+    updateMonthDisplay();
 }
 
 function logout() { localStorage.removeItem('loggedUser'); location.reload(); }
@@ -97,7 +98,7 @@ function updateCountdown() {
     const now = new Date();
     const todayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
     const todayData = workData[todayKey];
-    const branch = document.getElementById('branchSelect').value;
+    const branch = selectedBranch;
     const el = document.getElementById('countdown-timer');
 
     if (!todayData || !todayData.shift) {
@@ -253,3 +254,77 @@ if ('serviceWorker' in navigator) {
         });
     });
 }
+
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+
+function updateMonthDisplay() {
+    document.getElementById("monthDisplay").innerText =
+        `Tháng ${currentMonth + 1} - ${currentYear}`;
+}
+
+function changeMonth(direction) {
+    currentMonth += direction;
+
+    if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+    }
+    if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+    }
+
+    document.getElementById('selectMonth').value = currentMonth;
+    document.getElementById('selectYear').value = currentYear;
+
+    updateMonthDisplay();
+    renderCalendar();
+}
+
+
+let startX = 0;
+
+const slider = document.getElementById("monthSlider");
+
+slider.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+});
+
+slider.addEventListener("touchend", e => {
+    let endX = e.changedTouches[0].clientX;
+    handleSwipe(endX);
+});
+
+slider.addEventListener("mousedown", e => {
+    startX = e.clientX;
+});
+
+slider.addEventListener("mouseup", e => {
+    handleSwipe(e.clientX);
+});
+
+function handleSwipe(endX) {
+    let diff = endX - startX;
+
+    if (diff < -50) changeMonth(1);      // Swipe trái
+    if (diff > 50) changeMonth(-1);      // Swipe phải
+}
+
+let selectedBranch = localStorage.getItem("selectedBranch") || "176";
+
+document.querySelectorAll(".branch-card").forEach(card => {
+    if (card.dataset.branch === selectedBranch)
+        card.classList.add("active");
+
+    card.addEventListener("click", () => {
+        selectedBranch = card.dataset.branch;
+        localStorage.setItem("selectedBranch", selectedBranch);
+
+        document.querySelectorAll(".branch-card")
+            .forEach(c => c.classList.remove("active"));
+
+        card.classList.add("active");
+        updateCountdown();
+    });
+});
