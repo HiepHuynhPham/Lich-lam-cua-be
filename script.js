@@ -304,22 +304,6 @@ function initSlider() {
     });
 }
 
-slider.addEventListener("touchstart", e => {
-    startX = e.touches[0].clientX;
-});
-
-slider.addEventListener("touchend", e => {
-    let endX = e.changedTouches[0].clientX;
-    handleSwipe(endX);
-});
-
-slider.addEventListener("mousedown", e => {
-    startX = e.clientX;
-});
-
-slider.addEventListener("mouseup", e => {
-    handleSwipe(e.clientX);
-});
 
 function handleSwipe(endX) {
     let diff = endX - startX;
@@ -328,7 +312,7 @@ function handleSwipe(endX) {
     if (diff > 50) changeMonth(-1);      // Swipe phải
 }
 
-let selectedBranch = localStorage.getItem("selectedBranch") || "176";
+const branch = localStorage.getItem("selectedBranch") || "176";
 
 document.querySelectorAll(".branch-card").forEach(card => {
     if (card.dataset.branch === selectedBranch)
