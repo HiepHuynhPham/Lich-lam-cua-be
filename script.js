@@ -312,7 +312,7 @@ function handleSwipe(endX) {
     if (diff > 50) changeMonth(-1);      // Swipe phải
 }
 
-const branch = localStorage.getItem("selectedBranch") || "176";
+let selectedBranch = localStorage.getItem("selectedBranch") || "176";
 
 document.querySelectorAll(".branch-card").forEach(card => {
     if (card.dataset.branch === selectedBranch)
