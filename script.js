@@ -7,8 +7,6 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVf6cTbWCLxyIwXVdR9
 window.onload = () => {
     if (currentUser) showApp(currentUser);
     setInterval(updateCountdown, 1000);
-    const savedBranch = localStorage.getItem('selectedBranch');
-    if (savedBranch) document.getElementById('branchSelect').value = savedBranch;
 };
 
 function saveBranch() {
@@ -43,6 +41,7 @@ function showApp(user) {
     document.getElementById('hello-user').innerText = `Chào ${user}! 🌸`;
     initCalendar();
     updateMonthDisplay();
+    initSlider();
 }
 
 function logout() { localStorage.removeItem('loggedUser'); location.reload(); }
@@ -60,8 +59,8 @@ function initCalendar() {
 }
 
 function renderCalendar() {
-    const month = parseInt(document.getElementById('selectMonth').value);
-    const year = parseInt(document.getElementById('selectYear').value);
+    const month = currentMonth;
+    const year = currentYear;
     const grid = document.getElementById('calendarGrid');
     grid.innerHTML = "";
 
@@ -182,7 +181,7 @@ function saveAndRefresh() {
         
         const loaiHienThi = data.isPeriod ? `${data.shift || 'Nghỉ'} + Dâu 🩸` : (data.shift || 'Nghỉ');
         params.append('caLam', loaiHienThi);
-        params.append('chiNhanh', document.getElementById('branchSelect').value);
+        params.append('chiNhanh', selectedBranch);
         params.append('ghiChu', data.note || "");
 
         fetch(SCRIPT_URL, {
@@ -210,8 +209,8 @@ function closeModal() {
 
 function calculateSalary() {
     let full = 0, half = 0, hrs = 0, 
-        m = parseInt(document.getElementById('selectMonth').value)+1, 
-        y = parseInt(document.getElementById('selectYear').value);
+        m = currentMonth + 1,
+        y = currentYear;
     
     for (let k in workData) {
         if (k.startsWith(`${y}-${m}-`)) {
@@ -227,7 +226,7 @@ function calculateSalary() {
 }
 
 function copyReport() {
-    let m = parseInt(document.getElementById('selectMonth').value)+1;
+    let m = currentMonth + 1;
     let txt = `📊 BÁO CÁO LƯƠNG THÁNG ${m}\n----------------\n- Ca Full: ${document.getElementById('totalFull').innerText}\n- Ca Nửa: ${document.getElementById('totalHalf').innerText}\n- Tổng nhận: ${document.getElementById('totalMoney').innerText}\n\nBé làm vất vả rồi, yêu Anh! ❤️`;
     navigator.clipboard.writeText(txt);
     alert("Đã copy báo cáo!");
@@ -275,9 +274,6 @@ function changeMonth(direction) {
         currentYear--;
     }
 
-    document.getElementById('selectMonth').value = currentMonth;
-    document.getElementById('selectYear').value = currentYear;
-
     updateMonthDisplay();
     renderCalendar();
 }
@@ -285,7 +281,28 @@ function changeMonth(direction) {
 
 let startX = 0;
 
-const slider = document.getElementById("monthSlider");
+let slider = null;
+
+function initSlider() {
+    slider = document.getElementById("monthSlider");
+    if (!slider) return;
+
+    slider.addEventListener("touchstart", e => {
+        startX = e.touches[0].clientX;
+    });
+
+    slider.addEventListener("touchend", e => {
+        handleSwipe(e.changedTouches[0].clientX);
+    });
+
+    slider.addEventListener("mousedown", e => {
+        startX = e.clientX;
+    });
+
+    slider.addEventListener("mouseup", e => {
+        handleSwipe(e.clientX);
+    });
+}
 
 slider.addEventListener("touchstart", e => {
     startX = e.touches[0].clientX;
