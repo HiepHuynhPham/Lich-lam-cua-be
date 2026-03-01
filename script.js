@@ -39,22 +39,16 @@ function showApp(user) {
     document.getElementById('auth-card').classList.add('hidden');
     document.getElementById('main-app').classList.remove('hidden');
     document.getElementById('hello-user').innerText = `Chào ${user}! 🌸`;
-    initCalendar();
-    updateMonthDisplay();
-    initSlider();
+
+    initSlider();          // set tháng năm trước
+    updateMonthDisplay();  
+    initCalendar();        // render sau cùng
 }
 
 function logout() { localStorage.removeItem('loggedUser'); location.reload(); }
 
 // --- LOGIC LỊCH & DỰ BÁO NGÀY DÂU ---
 function initCalendar() {
-    const mSel = document.getElementById('selectMonth');
-    const ySel = document.getElementById('selectYear');
-    const now = new Date();
-    if (mSel.options.length === 0) {
-        for (let i = 0; i < 12; i++) mSel.innerHTML += `<option value="${i}" ${i === now.getMonth()?'selected':''}>Tháng ${i+1}</option>`;
-        for (let i = now.getFullYear()-1; i <= now.getFullYear()+1; i++) ySel.innerHTML += `<option value="${i}" ${i === now.getFullYear()?'selected':''}>Năm ${i}</option>`;
-    }
     renderCalendar();
 }
 
