@@ -4,6 +4,7 @@ let selectedDateKey = null;
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVf6cTbWCLxyIwXVdR9GIXgsQC_lndTR0iutKyiSxvglR8YDljwmqC6X4wiWCIYXu_Xw/exec";
 
+
 window.onload = () => {
     if (currentUser) showApp(currentUser);
     setInterval(updateCountdown, 1000);
@@ -57,6 +58,8 @@ function login() {
     })
     .then(res => res.text())
     .then(data => {
+        console.log("Server trả về:", data);  // 👈 THÊM DÒNG NÀY
+
         if (data === "LOGIN_FAILED") {
             alert("Sai tài khoản hoặc mật khẩu!");
         } else {
