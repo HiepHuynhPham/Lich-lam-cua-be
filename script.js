@@ -23,16 +23,49 @@ function toggleForm() {
 function register() {
     const u = document.getElementById('reg-user').value.trim();
     const p = document.getElementById('reg-pass').value.trim();
-    if (u && p) { localStorage.setItem(`user_${u}`, p); alert("Đã tạo tài khoản!"); toggleForm(); }
+
+    fetch(SCRIPT_URL, {
+        method: "POST",
+        body: new URLSearchParams({
+            action: "register",
+            username: u,
+            password: p
+        })
+    })
+    .then(res => res.text())
+    .then(data => {
+        if (data === "USER_EXISTS") {
+            alert("Tài khoản đã tồn tại!");
+        } else {
+            alert("Đăng ký thành công!");
+            toggleForm();
+        }
+    });
 }
 
 function login() {
     const u = document.getElementById('login-user').value.trim();
     const p = document.getElementById('login-pass').value.trim();
-    if (localStorage.getItem(`user_${u}`) === p) {
-        localStorage.setItem('loggedUser', u);
-        showApp(u);
-    } else alert("Sai rồi bé ơi!");
+
+    fetch(SCRIPT_URL, {
+        method: "POST",
+        body: new URLSearchParams({
+            action: "login",
+            username: u,
+            password: p
+        })
+    })
+    .then(res => res.text())
+    .then(data => {
+        if (data === "LOGIN_FAILED") {
+            alert("Sai tài khoản hoặc mật khẩu!");
+        } else {
+            localStorage.setItem('loggedUser', u);
+            workData = JSON.parse(data);
+            localStorage.setItem('workData_v6', data);
+            showApp(u);
+        }
+    });
 }
 
 function showApp(user) {
@@ -180,10 +213,13 @@ function saveAndRefresh() {
         params.append('ghiChu', data.note || "");
 
         fetch(SCRIPT_URL, {
-            method: "POST",
-            mode: "no-cors",
-            body: params
-        });
+    method: "POST",
+    body: new URLSearchParams({
+        action: "saveData",
+        username: localStorage.getItem('loggedUser'),
+        data: JSON.stringify(workData)
+    })
+});
     }
 
     // 3. Cập nhật giao diện và ĐÓNG MODAL
