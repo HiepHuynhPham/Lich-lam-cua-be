@@ -43,6 +43,7 @@ function showApp(user) {
     initSlider();          // set tháng năm trước
     updateMonthDisplay();  
     initCalendar();        // render sau cùng
+    enableCalendarSwipe(); // Bật tính năng vuốt trên lịch
 }
 
 function logout() { localStorage.removeItem('loggedUser'); location.reload(); }
@@ -323,3 +324,50 @@ document.querySelectorAll(".branch-card").forEach(card => {
         updateCountdown();
     });
 });
+
+function enableCalendarSwipe() {
+    const calendar = document.getElementById("calendarGrid");
+    let startX = 0;
+
+    calendar.addEventListener("touchstart", (e) => {
+        startX = e.touches[0].clientX;
+    });
+
+    calendar.addEventListener("touchend", (e) => {
+        let endX = e.changedTouches[0].clientX;
+        handleSwipe(startX, endX);
+    });
+
+    calendar.addEventListener("mousedown", (e) => {
+        startX = e.clientX;
+    });
+
+    calendar.addEventListener("mouseup", (e) => {
+        let endX = e.clientX;
+        handleSwipe(startX, endX);
+    });
+
+    function handleSwipe(start, end) {
+        const diff = end - start;
+        if (Math.abs(diff) < 50) return;
+
+        if (diff < 0) {
+            // Vuốt trái → tháng sau
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        } else {
+            // Vuốt phải → tháng trước
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+        }
+
+        updateMonthDisplay();
+        renderCalendar();
+    }
+}
