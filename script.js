@@ -220,7 +220,11 @@ function saveAndRefresh() {
     body: new URLSearchParams({
         action: "saveData",
         username: localStorage.getItem('loggedUser'),
-        data: JSON.stringify(workData)
+        data: JSON.stringify(workData),
+        ngay: selectedDateKey,
+        ca: data.shift || "Nghỉ",
+        ghiChu: data.note || "",
+        chiNhanh: selectedBranch
     })
 });
     }
