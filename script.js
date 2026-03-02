@@ -100,6 +100,7 @@ function initCalendar() {
 }
 
 function renderCalendar() {
+    const now = new Date();
     const month = currentMonth;
     const year = currentYear;
     const grid = document.getElementById('calendarGrid');
