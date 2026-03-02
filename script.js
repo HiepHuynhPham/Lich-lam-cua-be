@@ -99,10 +99,17 @@ function renderCalendar() {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     let lastPeriod = null;
-    Object.keys(workData).sort().forEach(k => { if(workData[k].isPeriod) lastPeriod = new Date(k); });
+    Object.keys(workData)
+.sort((a,b) => new Date(a) - new Date(b))
+.forEach(k => {
+    if (workData[k].isPeriod) lastPeriod = new Date(k);
+});
 
     ['CN','T2','T3','T4','T5','T6','T7'].forEach(d => grid.innerHTML += `<div class="day-name">${d}</div>`);
-    for (let i = 0; i < (firstDay||7)-7; i++) grid.innerHTML += `<div></div>`;
+    const startDay = firstDay === 0 ? 6 : firstDay - 1;
+for (let i = 0; i < startDay; i++) {
+    grid.innerHTML += `<div></div>`;
+}
 
     for (let d = 1; d <= daysInMonth; d++) {
         const key = `${year}-${month + 1}-${d}`;
@@ -118,7 +125,14 @@ function renderCalendar() {
             if (current.toDateString() === nextPredict.toDateString()) cls += ' predicted-period';
         }
 
-        grid.innerHTML += `<div class="day ${cls}" onclick="openModal('${key}')">${d}<small style="font-size:7px">${data.shift||''}</small></div>`;
+        grid.innerHTML += `
+<div class="day ${cls}" onclick="openModal('${key}')">
+    ${d}
+    <small>${data.shift || ''}</small>
+    <small class="branch">
+        ${data.branch ? 'CN ' + data.branch : ''}
+    </small>
+</div>`;
     }
     calculateSalary();
 }
@@ -199,6 +213,7 @@ function saveAndRefresh() {
     
     if(!workData[selectedDateKey]) workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
     workData[selectedDateKey].note = noteContent;
+    workData[selectedDateKey].branch = selectedBranch;
 
     // 1. Lưu LocalStorage
     localStorage.setItem('workData_v6', JSON.stringify(workData));

@@ -254,3 +254,13 @@ button:hover { opacity: 0.8; transform: scale(0.98); }
     background: var(--pink);
     color: white;
 }
+
+.day small {
+    display: block;
+    line-height: 1.2;
+}
+
+.day .branch {
+    font-size: 7px;
+    color: #666;
+}
