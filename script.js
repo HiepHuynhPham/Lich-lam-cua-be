@@ -112,7 +112,11 @@ for (let i = 0; i < startDay; i++) {
 }
 
     for (let d = 1; d <= daysInMonth; d++) {
-        const key = `${year}-${month + 1}-${d}`;
+        const todayKey = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+).toISOString().split('T')[0];
         const data = workData[key] || { shift: null, isPeriod: false, note: "" };
         let cls = data.shift === 'Full' ? 'selected-full' : (data.shift ? 'selected-half' : '');
         if (data.isPeriod) cls += ' is-period';
@@ -140,7 +144,11 @@ for (let i = 0; i < startDay; i++) {
 // --- ĐẾM NGƯỢC ---
 function updateCountdown() {
     const now = new Date();
-    const todayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+    const todayKey = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+).toISOString().split('T')[0];
     const todayData = workData[todayKey];
     const branch = selectedBranch;
     const el = document.getElementById('countdown-timer');
@@ -266,7 +274,8 @@ function calculateSalary() {
         y = currentYear;
     
     for (let k in workData) {
-        if (k.startsWith(`${y}-${m}-`)) {
+        const monthStr = String(m).padStart(2, '0');
+if (k.startsWith(`${y}-${monthStr}-`)) {
             const s = workData[k].shift;
             if (s === 'Full') { full++; hrs += 13; }
             else if (s) { half++; hrs += 7; }
