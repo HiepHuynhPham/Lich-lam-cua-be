@@ -4,6 +4,16 @@ let selectedDateKey = null;
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVf6cTbWCLxyIwXVdR9GIXgsQC_lndTR0iutKyiSxvglR8YDljwmqC6X4wiWCIYXu_Xw/exec";
 
+// Chuẩn hóa key cũ sang yyyy-mm-dd
+let newData = {};
+for (let k in workData) {
+    const d = new Date(k);
+    if (!isNaN(d)) {
+        const newKey = d.toISOString().split('T')[0];
+        newData[newKey] = workData[k];
+    }
+}
+workData = newData;
 
 window.onload = () => {
     if (currentUser) showApp(currentUser);
