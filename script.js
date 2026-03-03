@@ -8,13 +8,27 @@ let selectedDateKey = null;
 const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbwVf6cTbWCLxyIwXVdR9GIXgsQC_lndTR0iutKyiSxvglR8YDljwmqC6X4wiWCIYXu_Xw/exec";
 
-// Chuẩn hóa key cũ sang yyyy-mm-dd
+function formatDateLocal(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 let newData = {};
 for (let k in workData) {
-  const d = new Date(k);
-  if (!isNaN(d)) {
-    const newKey = d.toISOString().split("T")[0];
-    newData[newKey] = workData[k];
+  if (/^\d{4}-\d{2}-\d{2}$/.test(k)) {
+    // Nếu đã đúng format thì giữ nguyên
+    newData[k] = workData[k];
+  } else {
+    // Nếu là format cũ thì mới convert
+    const parts = k.split("/");
+    if (parts.length === 3) {
+      const d = parts[0].padStart(2, "0");
+      const m = parts[1].padStart(2, "0");
+      const y = parts[2];
+      newData[`${y}-${m}-${d}`] = workData[k];
+    }
   }
 }
 workData = newData;
@@ -75,7 +89,7 @@ function login() {
   })
     .then((res) => res.text())
     .then((data) => {
-      console.log("Server trả về:", data); // 👈 THÊM DÒNG NÀY
+      console.log("Server trả về:", data);
 
       if (data === "LOGIN_FAILED") {
         alert("Sai tài khoản hoặc mật khẩu!");
@@ -186,9 +200,9 @@ function renderCalendar() {
 // --- ĐẾM NGƯỢC ---
 function updateCountdown() {
   const now = new Date();
-  const todayKey = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    .toISOString()
-    .split("T")[0];
+  const todayKey = formatDateLocal(
+    new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+  );
   const todayData = workData[todayKey];
   const el = document.getElementById("countdown-timer");
 
