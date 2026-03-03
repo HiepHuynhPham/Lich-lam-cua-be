@@ -1,98 +1,148 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lịch Làm Của Em Bé 🎀</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon.png">
-</head>
-<body>
-
+    <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon.png" />
+  </head>
+  <body>
     <div class="card" id="auth-card">
-        <div id="login-form">
-            <h2>Đăng Nhập 🎀</h2>
-            <input type="text" id="login-user" placeholder="Tên đăng nhập">
-            <input type="password" id="login-pass" placeholder="Mật khẩu">
-            <button onclick="login()">Vào xem lịch thôi!</button>
-            <p class="switch-btn" onclick="toggleForm()">Chưa có tài khoản? Đăng ký</p>
-        </div>
-        <div id="register-form" class="hidden">
-            <h2>Đăng Ký 🌸</h2>
-            <input type="text" id="reg-user" placeholder="Tên đăng nhập mới">
-            <input type="password" id="reg-pass" placeholder="Mật khẩu mới">
-            <button onclick="register()">Tạo tài khoản</button>
-            <p class="switch-btn" onclick="toggleForm()">Quay lại Đăng nhập</p>
-        </div>
+      <div id="login-form">
+        <h2>Đăng Nhập 🎀</h2>
+        <input type="text" id="login-user" placeholder="Tên đăng nhập" />
+        <input type="password" id="login-pass" placeholder="Mật khẩu" />
+        <button onclick="login()">Vào xem lịch thôi!</button>
+        <p class="switch-btn" onclick="toggleForm()">
+          Chưa có tài khoản? Đăng ký
+        </p>
+      </div>
+      <div id="register-form" class="hidden">
+        <h2>Đăng Ký 🌸</h2>
+        <input type="text" id="reg-user" placeholder="Tên đăng nhập mới" />
+        <input type="password" id="reg-pass" placeholder="Mật khẩu mới" />
+        <button onclick="register()">Tạo tài khoản</button>
+        <p class="switch-btn" onclick="toggleForm()">Quay lại Đăng nhập</p>
+      </div>
     </div>
 
     <div id="main-app" class="hidden">
-        <div class="card main-card">
-            <div class="header-app">
-                <h2 id="hello-user">Chào bé! ✨</h2>
-                <div id="countdown-timer" class="countdown"></div>
-            </div>
-            
-            <div class="settings-box">
-                <div class="branch-selector">
-    <div class="branch-card" data-branch="176">CN 176<br><small>22h30</small></div>
-    <div class="branch-card" data-branch="503">CN 503<br><small>22h00</small></div>
-    <div class="branch-card" data-branch="220">CN 220<br><small>22h30</small></div>
-    <div class="branch-card" data-branch="257">CN 257<br><small>22h00</small></div>
-</div>
-                <input type="number" id="hourlyRateInput" value="35000" oninput="calculateSalary()">
-            </div>
-
-            <div class="month-slider" id="monthSlider">
-                <div class="month-display" id="monthDisplay"></div>
-            </div>
-
-            <div class="grid" id="calendarGrid"></div>
-
-    
-
-            <div class="stats">
-                <div class="stat-box"><span id="totalFull">0</span><div class="label">Full</div></div>
-                <div class="stat-box"><span id="totalHalf">0</span><div class="label">Nửa</div></div>
-                <div class="stat-box total-salary">
-                    <span id="totalMoney">0đ</span>
-                    <div id="salaryTitle" class="label">TỔNG LƯƠNG</div>
-                </div>
-            </div>
-
-            <div class="action-btns">
-                <button class="btn-report" onclick="copyReport()">📋 Copy báo cáo gửi Anh</button>
-                <button class="btn-logout" onclick="logout()">Đăng xuất</button>
-            </div>
+      <div class="card main-card">
+        <div class="header-app">
+          <h2 id="hello-user">Chào bé! ✨</h2>
+          <div id="countdown-timer" class="countdown"></div>
         </div>
+
+        <div class="settings-box">
+          <div class="branch-selector">
+            <div class="branch-card" data-branch="176">
+              CN 176<br /><small>22h30</small>
+            </div>
+            <div class="branch-card" data-branch="503">
+              CN 503<br /><small>22h00</small>
+            </div>
+            <div class="branch-card" data-branch="220">
+              CN 220<br /><small>22h30</small>
+            </div>
+            <div class="branch-card" data-branch="257">
+              CN 257<br /><small>22h00</small>
+            </div>
+          </div>
+          <input
+            type="number"
+            id="hourlyRateInput"
+            value="35000"
+            oninput="calculateSalary()"
+          />
+        </div>
+
+        <div class="month-slider" id="monthSlider">
+          <div class="month-display" id="monthDisplay"></div>
+        </div>
+
+        <div class="grid" id="calendarGrid"></div>
+
+        <div class="stats">
+          <div class="stat-box">
+            <span id="totalFull">0</span>
+            <div class="label">Full</div>
+          </div>
+          <div class="stat-box">
+            <span id="totalHalf">0</span>
+            <div class="label">Nửa</div>
+          </div>
+          <div class="stat-box total-salary">
+            <span id="totalMoney">0đ</span>
+            <div id="salaryTitle" class="label">TỔNG LƯƠNG</div>
+          </div>
+        </div>
+
+        <div class="action-btns">
+          <button class="btn-report" onclick="copyReport()">
+            📋 Copy báo cáo gửi Anh
+          </button>
+          <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+        </div>
+      </div>
     </div>
 
     <div class="modal" id="modal">
-        <div class="modal-content">
-    <h3 id="modalDate">Ngày ...</h3>
-    <div class="btn-group">
-        <button onclick="setShift('Full')" class="btn-full">Ca Full</button>
-        <button onclick="setShift('Sáng')" class="btn-half">Ca Sáng</button>
-        <button onclick="setShift('Chiều')" class="btn-half">Ca Chiều</button>
-        <button onclick="togglePeriod()" class="btn-period">Ngày Dâu 🩸</button>
-        <button onclick="setShift(null)" class="btn-delete">Xóa ca</button>
-    </div>
-    
-    <textarea id="dayNote" placeholder="Ghi chú (tip, ghi chú thêm...)" rows="2"></textarea>
-    
-    <button onclick="saveAndRefresh()" style="background: var(--pink); color: white; margin-top: 10px; width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold;">
-        XÁC NHẬN & LƯU ✨
-    </button>
-    
-    <p class="close-text" onclick="closeModal()" style="margin-top: 15px; cursor: pointer; color: #999;">Hủy bỏ</p>
-</div>
+      <div class="modal-content">
+        <h3 id="modalDate">Ngày ...</h3>
+        <div class="btn-group">
+          <button onclick="setShift(event, 'Full')" class="btn-full">
+            Ca Full
+          </button>
+          <button onclick="setShift(event, 'Sáng')" class="btn-half">
+            Ca Sáng
+          </button>
+          <button onclick="setShift(event, 'Chiều')" class="btn-half">
+            Ca Chiều
+          </button>
+          <button onclick="togglePeriod()" class="btn-period">
+            Ngày Dâu 🩸
+          </button>
+          <button onclick="setShift(event, null)" class="btn-delete">
+            Xóa ca
+          </button>
+        </div>
+
+        <textarea
+          id="dayNote"
+          placeholder="Ghi chú (tip, ghi chú thêm...)"
+          rows="2"
+        ></textarea>
+
+        <button
+          onclick="saveAndRefresh()"
+          style="
+            background: var(--pink);
+            color: white;
+            margin-top: 10px;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+          "
+        >
+          XÁC NHẬN & LƯU ✨
+        </button>
+
+        <p
+          class="close-text"
+          onclick="closeModal()"
+          style="margin-top: 15px; cursor: pointer; color: #999"
+        >
+          Hủy bỏ
+        </p>
+      </div>
     </div>
 
-    <div class="footer-version">
-        Version: 28
-    </div>
-    
+    <div class="footer-version">Version: 29</div>
+
     <script src="script.js"></script>
-</body>
+  </body>
 </html>

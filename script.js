@@ -175,7 +175,6 @@ function updateCountdown() {
     .toISOString()
     .split("T")[0];
   const todayData = workData[todayKey];
-  let selectedBranch = localStorage.getItem("selectedBranch") || "176";
   const el = document.getElementById("countdown-timer");
 
   if (!todayData || !todayData.shift) {
@@ -191,10 +190,10 @@ function updateCountdown() {
   } else if (selectedBranch === "503") {
     endH = 22;
     endM = 0;
-  } else if (selectedBranch === "CN3") {
+  } else if (selectedBranch === "220") {
     endH = 21;
     endM = 30;
-  } else if (selectedBranch === "CN4") {
+  } else if (selectedBranch === "257") {
     endH = 21;
     endM = 0;
   }
@@ -228,19 +227,19 @@ function openModal(key) {
   document.getElementById("modal").style.display = "flex";
 }
 
-function setShift(s) {
+function setShift(e, s) {
   if (!workData[selectedDateKey])
     workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
+
   workData[selectedDateKey].shift = s;
 
-  // Thêm hiệu ứng để bé biết là đã bấm trúng (Nút sẽ đậm lên)
   document
     .querySelectorAll(".btn-group button")
     .forEach((btn) => (btn.style.border = "none"));
-  if (event) event.target.style.border = "2px solid #ff85a1";
 
-  // CHỈ CẬP NHẬT DỮ LIỆU TẠM THỜI, KHÔNG GỌI saveAndRefresh() Ở ĐÂY
-  console.log("Đã chọn ca: " + s);
+  if (e) e.target.style.border = "2px solid #ff85a1";
+
+  console.log("Đã chọn ca:", s);
 }
 
 function togglePeriod() {
