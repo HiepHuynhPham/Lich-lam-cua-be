@@ -135,7 +135,9 @@ function renderCalendar() {
   }
 
   for (let d = 1; d <= daysInMonth; d++) {
-    const key = new Date(year, month, d).toISOString().split("T")[0];
+    const day = String(d).padStart(2, "0");
+    const monthStr = String(month + 1).padStart(2, "0");
+    const key = `${year}-${monthStr}-${day}`;
 
     const data = workData[key] || { shift: null, isPeriod: false, note: "" };
 
@@ -145,15 +147,28 @@ function renderCalendar() {
         : data.shift
           ? "selected-half"
           : "";
+
     if (data.isPeriod) cls += " is-period";
     if (data.note) cls += " has-note";
 
+    // ✅ Tô viền ngày hôm nay
+    const today = new Date();
+    const todayKey = `${today.getFullYear()}-${String(
+      today.getMonth() + 1,
+    ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+    if (key === todayKey) {
+      cls += " today";
+    }
+
     if (lastPeriod && !data.isPeriod) {
-      let current = new Date(key);
+      let current = new Date(year, month, d);
       let nextPredict = new Date(lastPeriod);
       nextPredict.setDate(nextPredict.getDate() + 28 - 5);
-      if (current.toDateString() === nextPredict.toDateString())
+
+      if (current.toDateString() === nextPredict.toDateString()) {
         cls += " predicted-period";
+      }
     }
 
     grid.innerHTML += `
@@ -237,7 +252,7 @@ function setShift(e, s) {
     .querySelectorAll(".btn-group button")
     .forEach((btn) => (btn.style.border = "none"));
 
-  if (e) e.target.style.border = "2px solid #ff85a1";
+  if (e) e.target.style.border = "2px solid #000000";
 
   console.log("Đã chọn ca:", s);
 }

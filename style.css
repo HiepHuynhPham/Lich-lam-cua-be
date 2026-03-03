@@ -1,266 +1,335 @@
 /* 1. KHAI BÁO BIẾN MÀU SẮC */
 :root {
-    --pink: #ff85a1;
-    --soft-pink: #fef1f5;
-    --red-period: #ff4d6d;
-    --predict-period: #ffe4e8;
-    --white: #ffffff;
-    --text-gray: #888;
-    --note-green: #4CAF50;
+  --pink: #ff85a1;
+  --soft-pink: #fef1f5;
+  --red-period: #ff4d6d;
+  --predict-period: #ffe4e8;
+  --white: #ffffff;
+  --text-gray: #888;
+  --note-green: #4caf50;
 }
 
 /* 2. CÀI ĐẶT CHUNG */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--soft-pink);
-    display: flex;
-    flex-direction: column;   /* để footer xuống dưới */
-    justify-content: center;  /* căn giữa ngang */
-    align-items: center;      /* căn giữa dọc */
-    min-height: 100vh;
-    margin: 0;
-    padding: 10px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--soft-pink);
+  display: flex;
+  flex-direction: column; /* để footer xuống dưới */
+  justify-content: center; /* căn giữa ngang */
+  align-items: center; /* căn giữa dọc */
+  min-height: 100vh;
+  margin: 0;
+  padding: 10px;
 }
 
-html, body {
-    overflow-x: hidden;
+html,
+body {
+  overflow-x: hidden;
 }
 
 .card {
-    background: var(--white);
-    padding: 1.5rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(255, 133, 161, 0.15);
-    width: 100%;
-    max-width: 420px;
-    text-align: center;
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(255, 133, 161, 0.15);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
 }
 
-.hidden { display: none !important; }
+.hidden {
+  display: none !important;
+}
 
 /* 3. TIÊU ĐỀ & ĐẾM NGƯỢC */
-h2 { color: var(--pink); margin: 0; margin-bottom: 5px; }
-.countdown { 
-    font-size: 12px; 
-    color: #ff6b8d; 
-    font-weight: bold; 
-    margin-bottom: 15px;
-    min-height: 18px;
+h2 {
+  color: var(--pink);
+  margin: 0;
+  margin-bottom: 5px;
+}
+.countdown {
+  font-size: 12px;
+  color: #ff6b8d;
+  font-weight: bold;
+  margin-bottom: 15px;
+  min-height: 18px;
 }
 
 /* 4. FORM NHẬP LIỆU */
-input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    box-sizing: border-box;
-    outline: none;
-    transition: 0.3s;
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  box-sizing: border-box;
+  outline: none;
+  transition: 0.3s;
 }
 
-input:focus, select:focus { border-color: var(--pink); }
+input:focus,
+select:focus {
+  border-color: var(--pink);
+}
 
 button {
-    width: 100%;
-    padding: 12px;
-    background: var(--pink);
-    border: none;
-    color: white;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
+  width: 100%;
+  padding: 12px;
+  background: var(--pink);
+  border: none;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
 }
 
-button:hover { opacity: 0.8; transform: scale(0.98); }
+button:hover {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
 
 /* 5. GIAO DIỆN LỊCH */
-.calendar-nav { display: flex; gap: 8px; margin-bottom: 10px; }
-
-.grid { 
-    display: grid; 
-    grid-template-columns: repeat(7, 1fr); 
-    gap: 5px; 
-    margin-top: 10px; 
+.calendar-nav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
-.day-name { 
-    font-size: 11px; 
-    color: #bbb; 
-    font-weight: bold; 
-    padding-bottom: 5px; 
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.day-name {
+  font-size: 11px;
+  color: #bbb;
+  font-weight: bold;
+  padding-bottom: 5px;
 }
 
 .day {
-    aspect-ratio: 1/1;
-    border: 1px solid #f9f9f9;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 13px;
-    background: #fff;
-    position: relative;
+  aspect-ratio: 1/1;
+  border: 1px solid #f9f9f9;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  background: #fff;
+  position: relative;
 }
 
 /* Trạng thái ngày */
-.selected-full { background: var(--pink) !important; color: white; }
-.selected-half { background: #ffb3c6 !important; color: white; }
-
-.is-period { border: 2px solid var(--red-period) !important; }
-.is-period::after { 
-    content: '🩸'; 
-    position: absolute; 
-    top: -2px; 
-    right: 0px; 
-    font-size: 9px; 
+.selected-full {
+  background: var(--pink) !important;
+  color: white;
+}
+.selected-half {
+  background: #ffb3c6 !important;
+  color: white;
 }
 
-.predicted-period { 
-    background-color: var(--predict-period); 
-    border: 1px dashed var(--red-period); 
+.is-period {
+  border: 2px solid var(--red-period) !important;
+}
+.is-period::after {
+  content: "🩸";
+  position: absolute;
+  top: -2px;
+  right: 0px;
+  font-size: 9px;
+}
+
+.predicted-period {
+  background-color: var(--predict-period);
+  border: 1px dashed var(--red-period);
 }
 
 /* Dấu chấm ghi chú */
 .has-note::before {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    width: 4px;
-    height: 4px;
-    background: var(--note-green);
-    border-radius: 50%;
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  background: var(--note-green);
+  border-radius: 50%;
 }
 
 /* 6. THỐNG KÊ LƯƠNG */
-.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
-
-.stat-box { 
-    background: #fff; 
-    border: 1px solid #f0f0f0; 
-    padding: 8px; 
-    border-radius: 12px; 
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 15px;
 }
 
-.total-salary { 
-    grid-column: span 2; 
-    background: #fff5f7; 
-    border: 1.5px solid var(--pink); 
+.stat-box {
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  padding: 8px;
+  border-radius: 12px;
 }
 
-.stat-box span { 
-    display: block; 
-    font-size: 18px; 
-    font-weight: bold; 
-    color: var(--pink); 
+.total-salary {
+  grid-column: span 2;
+  background: #fff5f7;
+  border: 1.5px solid var(--pink);
 }
 
-.label { font-size: 10px; color: #999; text-transform: uppercase; }
+.stat-box span {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--pink);
+}
+
+.label {
+  font-size: 10px;
+  color: #999;
+  text-transform: uppercase;
+}
 
 /* 7. NÚT BẤM CHỨC NĂNG */
-.action-btns { margin-top: 15px; display: flex; gap: 8px; }
-.btn-report { background: #6c5ce7; flex: 2; }
-.btn-logout { background: #bbb; flex: 1; font-size: 12px; }
-.switch-btn { margin-top: 15px; font-size: 14px; color: var(--text-gray); cursor: pointer; text-decoration: underline; }
+.action-btns {
+  margin-top: 15px;
+  display: flex;
+  gap: 8px;
+}
+.btn-report {
+  background: #6c5ce7;
+  flex: 2;
+}
+.btn-logout {
+  background: #bbb;
+  flex: 1;
+  font-size: 12px;
+}
+.switch-btn {
+  margin-top: 15px;
+  font-size: 14px;
+  color: var(--text-gray);
+  cursor: pointer;
+  text-decoration: underline;
+}
 
 /* 8. MODAL CHỌN CA */
-.modal { 
-    display: none; 
-    position: fixed; 
-    inset: 0; 
-    background: rgba(0,0,0,0.5); 
-    justify-content: center; 
-    align-items: center; 
-    z-index: 999; 
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
 }
 
-.modal-content { 
-    background: white; 
-    padding: 20px; 
-    border-radius: 20px; 
-    width: 300px; 
-    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 20px;
+  width: 300px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 
-.btn-group { 
-    display: grid; 
-    grid-template-columns: 1fr 1fr; 
-    gap: 8px; 
-    margin-bottom: 10px; 
+.btn-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
-.btn-full { background: var(--pink); }
-.btn-half { background: #ffb3c6; }
-.btn-period { background: var(--red-period); }
-.btn-delete { background: #eee; color: #777; }
-.close-text { margin-top: 15px; color: #bbb; cursor: pointer; font-size: 13px; }
+.btn-full {
+  background: var(--pink);
+}
+.btn-half {
+  background: #ffb3c6;
+}
+.btn-period {
+  background: var(--red-period);
+}
+.btn-delete {
+  background: #eee;
+  color: #777;
+}
+.close-text {
+  margin-top: 15px;
+  color: #bbb;
+  cursor: pointer;
+  font-size: 13px;
+}
 
 .predicted-period::after {
-    content: 'Sắp đến...';
-    position: absolute;
-    bottom: 2px;
-    font-size: 6px;
-    color: var(--red-period);
-    font-weight: bold;
+  content: "Sắp đến...";
+  position: absolute;
+  bottom: 2px;
+  font-size: 6px;
+  color: var(--red-period);
+  font-weight: bold;
 }
 
 /* Đẩy số Version xuống cuối trang */
 .footer-version {
-    text-align: center; 
-    color: #000000; 
-    font-size: 10px; 
-    padding: 20px 0; /* Tạo khoảng cách cho dễ nhìn */
-    width: 100%;
-    margin-top: auto; /* Tự động đẩy xuống nếu dùng flexbox */
+  text-align: center;
+  color: #000000;
+  font-size: 10px;
+  padding: 20px 0; /* Tạo khoảng cách cho dễ nhìn */
+  width: 100%;
+  margin-top: auto; /* Tự động đẩy xuống nếu dùng flexbox */
 }
 
-
-
 .month-slider {
-    margin-bottom: 10px;
-    overflow: hidden;
+  margin-bottom: 10px;
+  overflow: hidden;
 }
 
 .month-display {
-    font-size: 18px;
-    font-weight: bold;
-    color: var(--pink);
-    transition: transform 0.3s ease;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--pink);
+  transition: transform 0.3s ease;
 }
 
 .branch-selector {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
-    margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
 }
 
 .branch-card {
-    background: #fff5f7;
-    border: 1px solid var(--pink);
-    border-radius: 12px;
-    padding: 8px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: bold;
-    transition: 0.2s;
+  background: #fff5f7;
+  border: 1px solid var(--pink);
+  border-radius: 12px;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: 0.2s;
 }
 
 .branch-card.active {
-    background: var(--pink);
-    color: white;
+  background: var(--pink);
+  color: white;
 }
 
 .day small {
-    display: block;
-    line-height: 1.2;
+  display: block;
+  line-height: 1.2;
 }
 
 .day .branch {
-    font-size: 7px;
-    color: #666;
+  font-size: 7px;
+  color: #666;
+}
+
+.today {
+  border: 2px solid #000 !important;
 }
