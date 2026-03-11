@@ -130,7 +130,8 @@ function renderCalendar() {
   const grid = document.getElementById("calendarGrid");
   grid.innerHTML = "";
 
-  const firstDay = new Date(year, month, 1).getDay();
+  let firstDay = new Date(year, month, 1).getDay();
+  firstDay = firstDay === 0 ? 6 : firstDay - 1;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   let lastPeriod = null;
@@ -143,8 +144,8 @@ function renderCalendar() {
   ["CN", "T2", "T3", "T4", "T5", "T6", "T7"].forEach(
     (d) => (grid.innerHTML += `<div class="day-name">${d}</div>`),
   );
-  const startDay = firstDay === 0 ? 6 : firstDay - 1;
-  for (let i = 0; i < startDay; i++) {
+
+  for (let i = 0; i < firstDay; i++) {
     grid.innerHTML += `<div></div>`;
   }
 
@@ -252,12 +253,14 @@ function updateCountdown() {
     if (branch === "503" || branch === "257") {
       startH = 9;
       startM = 0;
+      endH = 13;
+      endM = 0;
     } else {
       startH = 9;
       startM = 30;
+      endH = 13;
+      endM = 30;
     }
-    endH = 12;
-    endM = 0;
   }
 
   // CA CHIỀU
@@ -265,12 +268,14 @@ function updateCountdown() {
     if (branch === "503" || branch === "257") {
       startH = 13;
       startM = 0;
+      endH = 17;
+      endM = 0;
     } else {
       startH = 13;
       startM = 30;
+      endH = 17;
+      endM = 30;
     }
-    endH = 17;
-    endM = 0;
   }
 
   // CA TỐI
@@ -345,13 +350,16 @@ function openModal(key) {
     .forEach((btn) => (btn.style.border = "none"));
 
   // nếu đã có ca thì tô viền lại
-  if (data.shift) {
-    document.querySelectorAll(".btn-group button").forEach((btn) => {
-      if (btn.innerText.includes(data.shift)) {
-        btn.style.border = "2px solid #000";
-      }
+  document.querySelectorAll(".btn-group button").forEach((btn) => {
+    btn.classList.remove("active-shift");
+
+    shifts.forEach((s) => {
+      if (s === "Sáng") totalHours += 4;
+      if (s === "Chiều") totalHours += 4;
+      if (s === "Tối") totalHours += 5;
+      if (s === "Full") totalHours += 13;
     });
-  }
+  });
 
   document.getElementById("modal").style.display = "flex";
 }
@@ -391,6 +399,7 @@ function saveAndRefresh() {
 
   if (!workData[selectedDateKey])
     workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
+  workData[selectedDateKey].shift = selectedShifts;
   workData[selectedDateKey].note = noteContent;
   workData[selectedDateKey].branch = selectedBranch;
 
