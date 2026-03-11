@@ -92,15 +92,19 @@
       <div class="modal-content">
         <h3 id="modalDate">Ngày ...</h3>
         <div class="btn-group">
-          <button onclick="setShift(event, 'Sáng')" class="btn-half">
+          <button onclick="toggleShift(event, 'Full')" class="btn-full">
+            💼 Ca Full
+          </button>
+
+          <button onclick="toggleShift(event, 'Sáng')" class="btn-half">
             🌅 Ca Sáng
           </button>
 
-          <button onclick="setShift(event, 'Chiều')" class="btn-half">
+          <button onclick="toggleShift(event, 'Chiều')" class="btn-half">
             🌤 Ca Chiều
           </button>
 
-          <button onclick="setShift(event, 'Tối')" class="btn-half">
+          <button onclick="toggleShift(event, 'Tối')" class="btn-half">
             🌙 Ca Tối
           </button>
 
@@ -108,9 +112,7 @@
             Ngày Dâu 🩸
           </button>
 
-          <button onclick="setShift(event, null)" class="btn-delete">
-            ❌ Xóa ca
-          </button>
+          <button onclick="clearShift()" class="btn-delete">❌ Xóa ca</button>
         </div>
 
         <textarea
@@ -145,7 +147,7 @@
       </div>
     </div>
 
-    <div class="footer-version">Version: 33</div>
+    <div class="footer-version">Version: 34</div>
     <script src="script.js"></script>
   </body>
 </html>

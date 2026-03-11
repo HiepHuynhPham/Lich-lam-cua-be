@@ -188,13 +188,41 @@ function renderCalendar() {
     grid.innerHTML += `
 <div class="day ${cls}" onclick="openModal('${key}')">
     ${d}
-    <small>${data.shift || ""}</small>
+    <small>${Array.isArray(data.shift) ? data.shift.join(", ") : data.shift || ""}</small>
     <small class="branch">
         ${data.branch ? "CN " + data.branch : ""}
     </small>
 </div>`;
   }
   calculateSalary();
+}
+
+let selectedShifts = [];
+
+function toggleShift(e, shift) {
+  const btn = e.target;
+
+  if (shift === "Full") {
+    selectedShifts = ["Full"];
+    document.querySelectorAll(".btn-group button").forEach((b) => {
+      b.classList.remove("active-shift");
+    });
+    btn.classList.add("active-shift");
+    return;
+  }
+
+  if (selectedShifts.includes("Full")) {
+    selectedShifts = [];
+    document.querySelector(".btn-full").classList.remove("active-shift");
+  }
+
+  if (selectedShifts.includes(shift)) {
+    selectedShifts = selectedShifts.filter((s) => s !== shift);
+    btn.classList.remove("active-shift");
+  } else {
+    selectedShifts.push(shift);
+    btn.classList.add("active-shift");
+  }
 }
 
 // --- ĐẾM NGƯỢC ---
@@ -207,7 +235,7 @@ function updateCountdown() {
   const todayData = workData[todayKey];
   const el = document.getElementById("countdown-timer");
 
-  if (!todayData || !todayData.shift) {
+  if (!todayData || !todayData.shift || todayData.shift.length === 0) {
     el.innerText = "Hôm nay bé nghỉ, đi chơi thôi! ❤️";
     return;
   }
@@ -298,6 +326,11 @@ function updateCountdown() {
 function openModal(key) {
   selectedDateKey = key;
   const data = workData[key] || { shift: null, isPeriod: false, note: "" };
+  selectedShifts = Array.isArray(data.shift)
+    ? data.shift
+    : data.shift
+      ? [data.shift]
+      : [];
 
   const [y, m, d] = key.split("-");
   document.getElementById("modalDate").innerText = `Ngày ${d}/${m}/${y}`;
@@ -327,7 +360,7 @@ function setShift(e, s) {
   if (!workData[selectedDateKey])
     workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
 
-  workData[selectedDateKey].shift = s;
+  workData[selectedDateKey].shift = selectedShifts;
 
   document
     .querySelectorAll(".btn-group button")
@@ -422,12 +455,12 @@ function calculateSalary() {
     const monthStr = String(m).padStart(2, "0");
     if (k.startsWith(`${y}-${monthStr}-`)) {
       const s = workData[k].shift;
-      if (s === "Full") {
-        full++;
+      if (Array.isArray(s)) {
+        hrs += s.length * 4; // mỗi ca 4h
+      } else if (s === "Full") {
         hrs += 13;
       } else if (s) {
-        half++;
-        hrs += 7;
+        hrs += 4;
       }
     }
   }
