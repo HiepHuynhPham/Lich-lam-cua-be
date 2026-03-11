@@ -1,4 +1,4 @@
-const CACHE_NAME = "lich-be-yeu-v30"; // Mỗi lần push code bạn nhớ tăng số này lên (v12, v13...)
+const CACHE_NAME = "lich-be-yeu-v31"; // Mỗi lần push code bạn nhớ tăng số này lên (v12, v13...)
 const urlsToCache = [
   "./",
   "./index.html",
