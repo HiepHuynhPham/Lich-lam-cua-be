@@ -203,6 +203,7 @@ function updateCountdown() {
   const todayKey = formatDateLocal(
     new Date(now.getFullYear(), now.getMonth(), now.getDate()),
   );
+
   const todayData = workData[todayKey];
   const el = document.getElementById("countdown-timer");
 
@@ -211,48 +212,114 @@ function updateCountdown() {
     return;
   }
 
-  let endH = 22,
-    endM = 0;
-  if (selectedBranch === "176") {
-    endH = 22;
-    endM = 30;
-  } else if (selectedBranch === "503") {
-    endH = 22;
-    endM = 0;
-  } else if (selectedBranch === "220") {
-    endH = 21;
-    endM = 30;
-  } else if (selectedBranch === "257") {
-    endH = 21;
-    endM = 0;
-  }
+  const branch = selectedBranch;
 
+  let startH = 0,
+    startM = 0;
+  let endH = 0,
+    endM = 0;
+
+  // CA SÁNG
   if (todayData.shift === "Sáng") {
-    endH = 14;
+    if (branch === "503" || branch === "257") {
+      startH = 9;
+      startM = 0;
+    } else {
+      startH = 9;
+      startM = 30;
+    }
+    endH = 12;
     endM = 0;
   }
 
-  const target = new Date();
-  target.setHours(endH, endM, 0);
+  // CA CHIỀU
+  if (todayData.shift === "Chiều") {
+    if (branch === "503" || branch === "257") {
+      startH = 13;
+      startM = 0;
+    } else {
+      startH = 13;
+      startM = 30;
+    }
+    endH = 17;
+    endM = 0;
+  }
 
-  const diff = target - now;
-  if (diff > 0) {
+  // CA TỐI
+  if (todayData.shift === "Tối") {
+    if (branch === "503" || branch === "257") {
+      startH = 17;
+      startM = 0;
+      endH = 22;
+      endM = 0;
+    } else {
+      startH = 17;
+      startM = 30;
+      endH = 22;
+      endM = 30;
+    }
+  }
+
+  const start = new Date();
+  start.setHours(startH, startM, 0);
+
+  const end = new Date();
+  end.setHours(endH, endM, 0);
+
+  // TRƯỚC GIỜ LÀM
+  if (now < start) {
+    const diff = start - now;
     const h = Math.floor(diff / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
-    el.innerText = `Còn ${h}h ${m}p nữa là được gặp Anh rồi! 🥰`;
-  } else {
-    el.innerText = "Bé xong việc rồi, về với Anh nào! 🛵";
+
+    el.innerText =
+      `Ca ${todayData.shift} (${startH}:${String(startM).padStart(2, "0")} - ${endH}:${String(endM).padStart(2, "0")})\n` +
+      `Còn ${h}h ${m}p nữa vào ca 💼`;
+    return;
   }
+
+  // ĐANG LÀM
+  if (now >= start && now <= end) {
+    const diff = end - now;
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+
+    el.innerText =
+      `Ca ${todayData.shift} (${startH}:${String(startM).padStart(2, "0")} - ${endH}:${String(endM).padStart(2, "0")})\n` +
+      `Còn ${h}h ${m}p nữa tan ca 🥰`;
+    return;
+  }
+
+  // SAU CA
+  el.innerText = "Hôm nay xong việc rồi, nghỉ thôi! 🛵";
 }
 
 // --- MODAL & CHỨC NĂNG ---
 function openModal(key) {
   selectedDateKey = key;
-  const data = workData[key] || { isPeriod: false, note: "" };
-  document.getElementById("modalDate").innerText = "Ngày " + key.split("-")[2];
+  const data = workData[key] || { shift: null, isPeriod: false, note: "" };
+
+  const [y, m, d] = key.split("-");
+  document.getElementById("modalDate").innerText = `Ngày ${d}/${m}/${y}`;
   document.getElementById("dayNote").value = data.note || "";
+
   const periodBtn = document.querySelector(".btn-period");
   periodBtn.innerText = data.isPeriod ? "Xóa Ngày Dâu 🧊" : "Ngày Dâu 🩸";
+
+  // reset viền nút
+  document
+    .querySelectorAll(".btn-group button")
+    .forEach((btn) => (btn.style.border = "none"));
+
+  // nếu đã có ca thì tô viền lại
+  if (data.shift) {
+    document.querySelectorAll(".btn-group button").forEach((btn) => {
+      if (btn.innerText.includes(data.shift)) {
+        btn.style.border = "2px solid #000";
+      }
+    });
+  }
+
   document.getElementById("modal").style.display = "flex";
 }
 
@@ -266,9 +333,7 @@ function setShift(e, s) {
     .querySelectorAll(".btn-group button")
     .forEach((btn) => (btn.style.border = "none"));
 
-  if (e) e.target.style.border = "2px solid #000000";
-
-  console.log("Đã chọn ca:", s);
+  if (e) e.target.style.border = "2px solid #ff4d6d";
 }
 
 function togglePeriod() {
