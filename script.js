@@ -242,95 +242,103 @@ function updateCountdown() {
   }
 
   const branch = selectedBranch;
+  const shifts = Array.isArray(todayData.shift)
+    ? todayData.shift
+    : [todayData.shift];
 
-  let startH = 0,
-    startM = 0;
-  let endH = 0,
-    endM = 0;
+  let nextShift = null;
 
-  // CA SÁNG
-  if (todayData.shift === "Sáng") {
-    if (branch === "503" || branch === "257") {
-      startH = 9;
-      startM = 0;
-      endH = 13;
+  for (let shift of shifts) {
+    let startH = 0,
+      startM = 0,
+      endH = 0,
       endM = 0;
-    } else {
-      startH = 9;
-      startM = 30;
-      endH = 13;
-      endM = 30;
+
+    if (shift === "Sáng") {
+      if (branch === "503" || branch === "257") {
+        startH = 9;
+        startM = 0;
+        endH = 13;
+        endM = 0;
+      } else {
+        startH = 9;
+        startM = 30;
+        endH = 13;
+        endM = 30;
+      }
+    }
+
+    if (shift === "Chiều") {
+      if (branch === "503" || branch === "257") {
+        startH = 13;
+        startM = 0;
+        endH = 17;
+        endM = 0;
+      } else {
+        startH = 13;
+        startM = 30;
+        endH = 17;
+        endM = 30;
+      }
+    }
+
+    if (shift === "Tối") {
+      if (branch === "503" || branch === "257") {
+        startH = 17;
+        startM = 0;
+        endH = 22;
+        endM = 0;
+      } else {
+        startH = 17;
+        startM = 30;
+        endH = 22;
+        endM = 30;
+      }
+    }
+
+    const start = new Date();
+    start.setHours(startH, startM, 0);
+
+    const end = new Date();
+    end.setHours(endH, endM, 0);
+
+    if (now < end) {
+      nextShift = { shift, start, end, startH, startM, endH, endM };
+      break;
     }
   }
 
-  // CA CHIỀU
-  if (todayData.shift === "Chiều") {
-    if (branch === "503" || branch === "257") {
-      startH = 13;
-      startM = 0;
-      endH = 17;
-      endM = 0;
-    } else {
-      startH = 13;
-      startM = 30;
-      endH = 17;
-      endM = 30;
-    }
+  if (!nextShift) {
+    el.innerText = "Hôm nay xong việc rồi, nghỉ thôi! 🛵";
+    return;
   }
 
-  // CA TỐI
-  if (todayData.shift === "Tối") {
-    if (branch === "503" || branch === "257") {
-      startH = 17;
-      startM = 0;
-      endH = 22;
-      endM = 0;
-    } else {
-      startH = 17;
-      startM = 30;
-      endH = 22;
-      endM = 30;
-    }
-  }
+  const { shift, start, end, startH, startM, endH, endM } = nextShift;
 
-  const start = new Date();
-  start.setHours(startH, startM, 0);
-
-  const end = new Date();
-  end.setHours(endH, endM, 0);
-
-  // TRƯỚC GIỜ LÀM
   if (now < start) {
     const diff = start - now;
     const h = Math.floor(diff / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
 
     el.innerText =
-      `Ca ${todayData.shift} (${startH}:${String(startM).padStart(2, "0")} - ${endH}:${String(endM).padStart(2, "0")})\n` +
+      `Ca ${shift} (${startH}:${String(startM).padStart(2, "0")} - ${endH}:${String(endM).padStart(2, "0")})\n` +
       `Còn ${h}h ${m}p nữa vào ca 💼`;
-    return;
-  }
-
-  // ĐANG LÀM
-  if (now >= start && now <= end) {
+  } else {
     const diff = end - now;
     const h = Math.floor(diff / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
 
     el.innerText =
-      `Ca ${todayData.shift} (${startH}:${String(startM).padStart(2, "0")} - ${endH}:${String(endM).padStart(2, "0")})\n` +
+      `Ca ${shift} (${startH}:${String(startM).padStart(2, "0")} - ${endH}:${String(endM).padStart(2, "0")})\n` +
       `Còn ${h}h ${m}p nữa tan ca 🥰`;
-    return;
   }
-
-  // SAU CA
-  el.innerText = "Hôm nay xong việc rồi, nghỉ thôi! 🛵";
 }
 
 // --- MODAL & CHỨC NĂNG ---
 function openModal(key) {
   selectedDateKey = key;
   const data = workData[key] || { shift: null, isPeriod: false, note: "" };
+
   selectedShifts = Array.isArray(data.shift)
     ? data.shift
     : data.shift
@@ -344,21 +352,15 @@ function openModal(key) {
   const periodBtn = document.querySelector(".btn-period");
   periodBtn.innerText = data.isPeriod ? "Xóa Ngày Dâu 🧊" : "Ngày Dâu 🩸";
 
-  // reset viền nút
-  document
-    .querySelectorAll(".btn-group button")
-    .forEach((btn) => (btn.style.border = "none"));
-
-  // nếu đã có ca thì tô viền lại
+  // reset nút ca
   document.querySelectorAll(".btn-group button").forEach((btn) => {
     btn.classList.remove("active-shift");
+  });
 
-    shifts.forEach((s) => {
-      if (s === "Sáng") totalHours += 4;
-      if (s === "Chiều") totalHours += 4;
-      if (s === "Tối") totalHours += 5;
-      if (s === "Full") totalHours += 13;
-    });
+  // bật lại ca đã chọn
+  selectedShifts.forEach((shift) => {
+    const btn = document.querySelector(`[data-shift="${shift}"]`);
+    if (btn) btn.classList.add("active-shift");
   });
 
   document.getElementById("modal").style.display = "flex";
@@ -454,28 +456,31 @@ function closeModal() {
 }
 
 function calculateSalary() {
-  let full = 0,
-    half = 0,
-    hrs = 0,
-    m = currentMonth + 1,
+  let hrs = 0;
+  let m = currentMonth + 1,
     y = currentYear;
 
   for (let k in workData) {
     const monthStr = String(m).padStart(2, "0");
+
     if (k.startsWith(`${y}-${monthStr}-`)) {
       const s = workData[k].shift;
+
       if (Array.isArray(s)) {
-        hrs += s.length * 4; // mỗi ca 4h
+        s.forEach((shift) => {
+          if (shift === "Sáng") hrs += 4;
+          if (shift === "Chiều") hrs += 4;
+          if (shift === "Tối") hrs += 5;
+          if (shift === "Full") hrs += 13;
+        });
       } else if (s === "Full") {
         hrs += 13;
-      } else if (s) {
-        hrs += 4;
       }
     }
   }
+
   const rate = parseInt(document.getElementById("hourlyRateInput").value) || 0;
-  document.getElementById("totalFull").innerText = full;
-  document.getElementById("totalHalf").innerText = half;
+
   document.getElementById("totalMoney").innerText =
     (hrs * rate).toLocaleString() + "đ";
 }
