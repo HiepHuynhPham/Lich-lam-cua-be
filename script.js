@@ -23,6 +23,13 @@ let selectedDateKey = null;
 const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbwVf6cTbWCLxyIwXVdR9GIXgsQC_lndTR0iutKyiSxvglR8YDljwmqC6X4wiWCIYXu_Xw/exec";
 
+function formatDateLocal(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 
 
 let newData = {};
@@ -347,6 +354,16 @@ function setShift(e, s) {
     .forEach((btn) => (btn.style.border = "none"));
 
   if (e) e.target.style.border = "2px solid #ff4d6d";
+}
+
+function clearShift() {
+  selectedShifts = [];
+  if (workData[selectedDateKey]) {
+    workData[selectedDateKey].shift = null;
+  }
+  document.querySelectorAll(".btn-group button").forEach((btn) => {
+    btn.classList.remove("active-shift");
+  });
 }
 
 function togglePeriod() {
