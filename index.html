@@ -14,8 +14,8 @@
         <h2>Đăng Nhập 🎀</h2>
         <input type="text" id="login-user" placeholder="Tên đăng nhập" />
         <input type="password" id="login-pass" placeholder="Mật khẩu" />
-        <button onclick="login()">Vào xem lịch thôi!</button>
-        <p class="switch-btn" onclick="toggleForm()">
+        <button id="login-button">Vào xem lịch thôi!</button>
+        <p class="switch-btn" id="toggle-register">
           Chưa có tài khoản? Đăng ký
         </p>
       </div>
@@ -23,8 +23,8 @@
         <h2>Đăng Ký 🌸</h2>
         <input type="text" id="reg-user" placeholder="Tên đăng nhập mới" />
         <input type="password" id="reg-pass" placeholder="Mật khẩu mới" />
-        <button onclick="register()">Tạo tài khoản</button>
-        <p class="switch-btn" onclick="toggleForm()">Quay lại Đăng nhập</p>
+        <button id="register-button">Tạo tài khoản</button>
+        <p class="switch-btn" id="toggle-login">Quay lại Đăng nhập</p>
       </div>
     </div>
 
@@ -54,7 +54,6 @@
             type="number"
             id="hourlyRateInput"
             value="35000"
-            oninput="calculateSalary()"
           />
         </div>
 
@@ -80,10 +79,10 @@
         </div>
 
         <div class="action-btns">
-          <button class="btn-report" onclick="copyReport()">
+          <button class="btn-report" id="copy-report-button">
             📋 Copy báo cáo gửi Anh
           </button>
-          <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+          <button class="btn-logout" id="logout-button">Đăng xuất</button>
         </div>
       </div>
     </div>
@@ -93,7 +92,6 @@
         <h3 id="modalDate">Ngày ...</h3>
         <div class="btn-group">
           <button
-            onclick="toggleShift(this, 'Full')"
             class="btn-full"
             data-shift="Full"
           >
@@ -101,7 +99,6 @@
           </button>
 
           <button
-            onclick="toggleShift(this, 'Sáng')"
             class="btn-half"
             data-shift="Sáng"
           >
@@ -109,7 +106,6 @@
           </button>
 
           <button
-            onclick="toggleShift(this, 'Chiều')"
             class="btn-half"
             data-shift="Chiều"
           >
@@ -117,18 +113,17 @@
           </button>
 
           <button
-            onclick="toggleShift(this, 'Tối')"
             class="btn-half"
             data-shift="Tối"
           >
             🌙 Ca Tối
           </button>
 
-          <button onclick="togglePeriod()" class="btn-period">
+          <button class="btn-period">
             Ngày Dâu 🩸
           </button>
 
-          <button onclick="clearShift()" class="btn-delete">❌ Xóa ca</button>
+          <button class="btn-delete">❌ Xóa ca</button>
         </div>
 
         <textarea
@@ -138,7 +133,7 @@
         ></textarea>
 
         <button
-          onclick="saveAndRefresh()"
+          id="save-button"
           style="
             background: var(--pink);
             color: white;
@@ -155,7 +150,7 @@
 
         <p
           class="close-text"
-          onclick="closeModal()"
+          id="cancel-button"
           style="margin-top: 15px; cursor: pointer; color: #999"
         >
           Hủy bỏ
@@ -164,6 +159,6 @@
     </div>
 
     <div class="footer-version">Version: 39</div>
-    <script src="script.js"></script>
+    <script src="js/main.js" type="module"></script>
   </body>
 </html>
