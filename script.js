@@ -1,19 +1,29 @@
-let workData =
-  JSON.parse(localStorage.getItem("workData_v6")) ||
-  JSON.parse(localStorage.getItem("workData_v5")) ||
-  {};
+let saveTimer = null;
+
+function saveData() {
+  clearTimeout(saveTimer);
+
+  saveTimer = setTimeout(() => {
+    localStorage.setItem("workData_v6", JSON.stringify(workData));
+  }, 300);
+}
+
+function safeParse(key) {
+  try {
+    return JSON.parse(localStorage.getItem(key));
+  } catch {
+    return null;
+  }
+}
+
+let workData = safeParse("workData_v6") || safeParse("workData_v5") || {};
 let currentUser = localStorage.getItem("loggedUser") || null;
 let selectedDateKey = null;
 
 const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbwVf6cTbWCLxyIwXVdR9GIXgsQC_lndTR0iutKyiSxvglR8YDljwmqC6X4wiWCIYXu_Xw/exec";
 
-function formatDateLocal(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
+
 
 let newData = {};
 for (let k in workData) {
@@ -35,10 +45,13 @@ workData = newData;
 
 window.onload = () => {
   if (currentUser) showApp(currentUser);
-  setInterval(updateCountdown, 1000);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) updateCountdown();
+  });
 };
 
 function saveBranch() {
+  saveData();
   localStorage.setItem(
     "selectedBranch",
     document.getElementById("branchSelect").value,
@@ -120,82 +133,39 @@ function logout() {
 
 // --- LOGIC LỊCH & DỰ BÁO NGÀY DÂU ---
 function initCalendar() {
-  renderCalendar();
+  const calendarGrid = document.getElementById("calendarGrid");
+  calendarGrid.addEventListener("click", function (e) {
+    if (!e.target.classList.contains("day")) return;
+    const date = e.target.dataset.date;
+    openModal(date);
+  });
+
+  renderCalendar(currentYear, currentMonth);
 }
 
-function renderCalendar() {
-  const now = new Date();
-  const month = currentMonth;
-  const year = currentYear;
-  const grid = document.getElementById("calendarGrid");
-  grid.innerHTML = "";
+function renderCalendar(year, month) {
+  const calendarGrid = document.getElementById("calendarGrid");
+  let html = "";
 
-  let firstDay = new Date(year, month, 1).getDay();
-  firstDay = firstDay === 0 ? 6 : firstDay - 1;
+  const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  let lastPeriod = null;
-  Object.keys(workData)
-    .sort((a, b) => new Date(a) - new Date(b))
-    .forEach((k) => {
-      if (workData[k].isPeriod) lastPeriod = new Date(k);
-    });
-
-  ["CN", "T2", "T3", "T4", "T5", "T6", "T7"].forEach(
-    (d) => (grid.innerHTML += `<div class="day-name">${d}</div>`),
-  );
-
+  // Add empty cells for days before the first day of the month
   for (let i = 0; i < firstDay; i++) {
-    grid.innerHTML += `<div></div>`;
+    html += `<div class="empty"></div>`;
   }
 
+  // Add cells for each day of the month
   for (let d = 1; d <= daysInMonth; d++) {
-    const day = String(d).padStart(2, "0");
-    const monthStr = String(month + 1).padStart(2, "0");
-    const key = `${year}-${monthStr}-${day}`;
-
-    const data = workData[key] || { shift: null, isPeriod: false, note: "" };
-
-    let cls =
-      data.shift === "Full"
-        ? "selected-full"
-        : data.shift
-          ? "selected-half"
-          : "";
-
-    if (data.isPeriod) cls += " is-period";
-    if (data.note) cls += " has-note";
-
-    // ✅ Tô viền ngày hôm nay
-    const today = new Date();
-    const todayKey = `${today.getFullYear()}-${String(
-      today.getMonth() + 1,
-    ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-
-    if (key === todayKey) {
-      cls += " today";
-    }
-
-    if (lastPeriod && !data.isPeriod) {
-      let current = new Date(year, month, d);
-      let nextPredict = new Date(lastPeriod);
-      nextPredict.setDate(nextPredict.getDate() + 28 - 5);
-
-      if (current.toDateString() === nextPredict.toDateString()) {
-        cls += " predicted-period";
-      }
-    }
-
-    grid.innerHTML += `
-<div class="day ${cls}" onclick="openModal('${key}')">
-    ${d}
-    <small>${Array.isArray(data.shift) ? data.shift.join(", ") : data.shift || ""}</small>
-    <small class="branch">
-        ${data.branch ? "CN " + data.branch : ""}
-    </small>
-</div>`;
+    const date = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    html += `
+      <div class="day" data-date="${date}">
+        ${d}
+      </div>
+    `;
   }
-  calculateSalary();
+
+  calendarGrid.innerHTML = html;
 }
 
 let selectedShifts = [];
@@ -440,7 +410,7 @@ function saveAndRefresh() {
   }
 
   // 3. Cập nhật giao diện và ĐÓNG MODAL
-  renderCalendar();
+  renderCalendar(currentYear, currentMonth);
   closeModal();
   updateCountdown();
   calculateSalary();
@@ -541,23 +511,35 @@ function changeMonth(direction) {
   }
 
   updateMonthDisplay();
-  renderCalendar();
+  renderCalendar(currentYear, currentMonth);
 }
 
-let startX = 0;
+function nextMonth() {
+  changeMonth(1);
+}
 
-let slider = null;
+function prevMonth() {
+  changeMonth(-1);
+}
 
 function initSlider() {
   slider = document.getElementById("monthSlider");
   if (!slider) return;
+
+  let startX = 0;
+  const threshold = 50; // Minimum swipe distance
 
   slider.addEventListener("touchstart", (e) => {
     startX = e.touches[0].clientX;
   });
 
   slider.addEventListener("touchend", (e) => {
-    handleSwipe(e.changedTouches[0].clientX);
+    const deltaX = e.changedTouches[0].clientX - startX;
+    if (deltaX > threshold) {
+      handleSwipe("right");
+    } else if (deltaX < -threshold) {
+      handleSwipe("left");
+    }
   });
 
   slider.addEventListener("mousedown", (e) => {
@@ -565,15 +547,21 @@ function initSlider() {
   });
 
   slider.addEventListener("mouseup", (e) => {
-    handleSwipe(e.clientX);
+    const deltaX = e.clientX - startX;
+    if (deltaX > threshold) {
+      handleSwipe("right");
+    } else if (deltaX < -threshold) {
+      handleSwipe("left");
+    }
   });
 }
 
-function handleSwipe(endX) {
-  let diff = endX - startX;
-
-  if (diff < -50) changeMonth(1); // Swipe trái
-  if (diff > 50) changeMonth(-1); // Swipe phải
+function handleSwipe(direction) {
+  if (direction === "left") {
+    nextMonth();
+  } else if (direction === "right") {
+    prevMonth();
+  }
 }
 
 let selectedBranch = localStorage.getItem("selectedBranch") || "176";
@@ -596,47 +584,37 @@ document.querySelectorAll(".branch-card").forEach((card) => {
 
 function enableCalendarSwipe() {
   const calendar = document.getElementById("calendarGrid");
+
   let startX = 0;
+  let startY = 0;
 
-  calendar.addEventListener("touchstart", (e) => {
-    startX = e.touches[0].clientX;
-  });
+  const threshold = 50;
 
-  calendar.addEventListener("touchend", (e) => {
-    let endX = e.changedTouches[0].clientX;
-    handleSwipe(startX, endX);
-  });
-
-  calendar.addEventListener("mousedown", (e) => {
-    startX = e.clientX;
-  });
-
-  calendar.addEventListener("mouseup", (e) => {
-    let endX = e.clientX;
-    handleSwipe(startX, endX);
-  });
-
-  function handleSwipe(start, end) {
-    const diff = end - start;
-    if (Math.abs(diff) < 50) return;
-
-    if (diff < 0) {
-      // Vuốt trái → tháng sau
-      currentMonth++;
-      if (currentMonth > 11) {
-        currentMonth = 0;
-        currentYear++;
-      }
-    } else {
-      // Vuốt phải → tháng trước
-      currentMonth--;
-      if (currentMonth < 0) {
-        currentMonth = 11;
-        currentYear--;
-      }
-    }
-
-    updateMonthDisplay();
-    renderCalendar();
+  function start(e) {
+    const touch = e.touches ? e.touches[0] : e;
+    startX = touch.clientX;
+    startY = touch.clientY;
   }
+
+  function end(e) {
+    const touch = e.changedTouches ? e.changedTouches[0] : e;
+
+    const deltaX = touch.clientX - startX;
+    const deltaY = touch.clientY - startY;
+
+    // bỏ qua nếu scroll dọc
+    if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+
+    if (deltaX > threshold) {
+      handleSwipe("right");
+    } else if (deltaX < -threshold) {
+      handleSwipe("left");
+    }
+  }
+
+  calendar.addEventListener("touchstart", start);
+  calendar.addEventListener("touchend", end);
+
+  calendar.addEventListener("mousedown", start);
+  calendar.addEventListener("mouseup", end);
 }
