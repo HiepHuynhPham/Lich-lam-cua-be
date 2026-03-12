@@ -177,8 +177,7 @@ function renderCalendar(year, month) {
 
 let selectedShifts = [];
 
-function toggleShift(e, shift) {
-  const btn = e.target;
+function toggleShift(btn, shift) {
 
   if (shift === "Full") {
     selectedShifts = ["Full"];
@@ -343,18 +342,7 @@ function openModal(key) {
   document.getElementById("modal").style.display = "flex";
 }
 
-function setShift(e, s) {
-  if (!workData[selectedDateKey])
-    workData[selectedDateKey] = { shift: null, isPeriod: false, note: "" };
 
-  workData[selectedDateKey].shift = selectedShifts;
-
-  document
-    .querySelectorAll(".btn-group button")
-    .forEach((btn) => (btn.style.border = "none"));
-
-  if (e) e.target.style.border = "2px solid #ff4d6d";
-}
 
 function clearShift() {
   selectedShifts = [];

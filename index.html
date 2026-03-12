@@ -93,7 +93,7 @@
         <h3 id="modalDate">Ngày ...</h3>
         <div class="btn-group">
           <button
-            onclick="toggleShift(event, 'Full')"
+            onclick="toggleShift(this, 'Full')"
             class="btn-full"
             data-shift="Full"
           >
@@ -101,7 +101,7 @@
           </button>
 
           <button
-            onclick="toggleShift(event, 'Sáng')"
+            onclick="toggleShift(this, 'Sáng')"
             class="btn-half"
             data-shift="Sáng"
           >
@@ -109,7 +109,7 @@
           </button>
 
           <button
-            onclick="toggleShift(event, 'Chiều')"
+            onclick="toggleShift(this, 'Chiều')"
             class="btn-half"
             data-shift="Chiều"
           >
@@ -117,7 +117,7 @@
           </button>
 
           <button
-            onclick="toggleShift(event, 'Tối')"
+            onclick="toggleShift(this, 'Tối')"
             class="btn-half"
             data-shift="Tối"
           >
@@ -163,7 +163,7 @@
       </div>
     </div>
 
-    <div class="footer-version">Version: 38</div>
+    <div class="footer-version">Version: 39</div>
     <script src="script.js"></script>
   </body>
 </html>

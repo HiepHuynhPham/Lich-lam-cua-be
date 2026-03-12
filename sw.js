@@ -1,4 +1,4 @@
-const CACHE_NAME = "lich-be-yeu-v38";
+const CACHE_NAME = "lich-be-yeu-v39";
 const urlsToCache = [
   "./",
   "./index.html",
